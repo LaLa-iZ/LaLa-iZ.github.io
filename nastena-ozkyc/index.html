@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f3ebdd">
+<title>Настёна, с днём рождения! 🌼</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='18' fill='%23c46a43'/><g fill='%23f6efe2'><ellipse cx='32' cy='18' rx='7' ry='11'/><ellipse cx='32' cy='46' rx='7' ry='11'/><ellipse cx='18' cy='32' rx='11' ry='7'/><ellipse cx='46' cy='32' rx='11' ry='7'/></g><circle cx='32' cy='32' r='7' fill='%23d9a441'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3ebdd; --paper2:#e9dcc6; --ink:#3b2f24; --soft:#6f5f4f; --sage:#8a9a6b; --olive:#5e6b3a; --moss:#3f4a2a;
+    --terra:#c46a43; --mustard:#d9a441; --rose:#c98a7a; --card:rgba(255,252,246,.78); --line:rgba(59,47,36,.12);
+    --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;background:var(--paper);touch-action:manipulation}
+  body{font-family:Manrope,system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;font-variant-numeric:lining-nums}  /* у Cormorant «30» иначе похоже на «зо» */
+  .app{position:fixed;inset:0;max-width:460px;margin:0 auto;overflow:hidden;
+    background:radial-gradient(120% 60% at 50% 0%,#fbf6ec 0%,var(--paper) 55%,var(--paper2) 100%)}
+  .app::before{content:"";position:absolute;inset:0;opacity:.35;pointer-events:none;
+    background-image:radial-gradient(rgba(94,107,58,.18) 1px,transparent 1.2px);background-size:14px 14px}
+  canvas#fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+  .serif{font-family:'Cormorant Garamond',Georgia,serif}
+
+  .screen{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateY(24px);
+    transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1),visibility 0s .8s}
+  .screen.active{opacity:1;visibility:visible;transform:none;transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+  .snd{position:absolute;top:calc(var(--safe-t) + 12px);right:12px;z-index:70;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
+    background:rgba(255,252,246,.8);font-size:17px;cursor:pointer}
+
+  /* ---- 1. букет ---- */
+  #s1{align-items:center;text-align:center;padding:calc(var(--safe-t) + 34px) 20px calc(var(--safe-b) + 20px);cursor:pointer}
+  .kick{font:800 11px/1 Manrope;letter-spacing:.24em;text-transform:uppercase;color:var(--olive)}
+  #s1 h1{font:700 40px/1.02 'Cormorant Garamond',serif;margin-top:12px}
+  .age{margin-top:6px;display:flex;align-items:baseline;justify-content:center;gap:8px}
+  .age b{font:700 84px/1 'Cormorant Garamond',serif;color:var(--terra);transition:transform .25s}
+  .age b.pulse{transform:scale(1.15)}
+  .age span{font:800 12px Manrope;letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
+  .hint{margin-top:6px;font-size:15px;color:var(--soft);transition:opacity .4s}
+  .bouquet{position:absolute;left:0;right:0;bottom:calc(var(--safe-b) + 0px);height:62vh;pointer-events:none}
+  .bouquet svg{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%)}
+  .stem{fill:none;stroke:var(--olive);stroke-width:3.2;stroke-linecap:round;transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1)}
+  .leaf{fill:var(--sage);transform:scale(0);transition:transform .5s .4s cubic-bezier(.3,1.4,.5,1)}
+  .flw{transform:scale(0) rotate(-150deg);transition:transform 1s .55s cubic-bezier(.25,1.3,.5,1)}
+  .on .leaf{transform:scale(1)} .on .flw{transform:scale(1) rotate(0)}
+  .sw{transform-box:view-box}
+  .sw.sway{animation:sway 4.5s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+  .go{margin-top:18px;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;font:800 15px/1 Manrope;color:#fff;
+    padding:17px 26px;border-radius:999px;background:linear-gradient(135deg,var(--terra),#a8532f);box-shadow:0 12px 26px rgba(196,106,67,.35);
+    opacity:0;transform:translateY(14px) scale(.96);pointer-events:none;transition:opacity .6s,transform .6s}
+  .go.show{opacity:1;transform:none;pointer-events:auto}
+  .go:active{transform:scale(.96)}
+
+  /* ---- 2. содержимое ---- */
+  #s2{overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:calc(var(--safe-t) + 26px) 16px calc(var(--safe-b) + 40px)}
+  #s2::-webkit-scrollbar{display:none}
+  #s2 > *{flex-shrink:0}
+  .hero{text-align:center;padding:8px 6px 4px}
+  .hero h2{font:700 38px/1.02 'Cormorant Garamond',serif;margin-top:10px}
+  .hero h2 em{color:var(--terra);font-style:italic}
+  .hero p{margin-top:10px;font-size:15px;line-height:1.5;color:var(--soft)}
+  .sec{margin:34px 0 12px;display:flex;align-items:center;gap:10px;font:700 26px/1 'Cormorant Garamond',serif}
+  .sec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 10px 28px rgba(94,74,50,.08)}
+  .vis-in{opacity:0;transform:translateY(22px);transition:opacity .7s,transform .7s cubic-bezier(.2,.8,.2,1)}
+  .vis-in.vis{opacity:1;transform:none}
+
+  .pass{margin-top:22px;padding:18px;position:relative;overflow:hidden}
+  .pass::before{content:"";position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(217,164,65,.28),transparent 70%)}
+  .pTop{display:flex;gap:14px;align-items:center}
+  .ava{flex:none;width:84px;height:84px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--sage)}
+  .ava img{width:100%;height:100%;object-fit:cover;display:block}
+  .pName{font:700 30px/1 'Cormorant Garamond',serif}
+  .pSub{font-size:12.5px;color:var(--soft);margin-top:4px;line-height:1.35}
+  .words{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .words span{font:700 12px Manrope;padding:7px 11px;border-radius:999px;background:rgba(138,154,107,.18);color:var(--moss)}
+  .rows{margin-top:14px;border-top:1px dashed var(--line)}
+  .rows div{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;line-height:1.35}
+  .rows i{font-style:normal;flex:none;width:94px;color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{padding:14px 14px 15px}
+  .tile.wide{grid-column:1/-1}
+  .tile .ic{font-size:22px}
+  .tile .v{font:700 30px/1 'Cormorant Garamond',serif;margin-top:6px;color:var(--terra)}
+  .tile .l{font-size:12.5px;color:var(--soft);margin-top:4px;line-height:1.3}
+
+  .mapCard{padding:14px}
+  .mapTop{display:flex;gap:10px;margin-bottom:6px}
+  .mapTop div{flex:1}
+  .mapTop b{display:block;font:700 34px/1 'Cormorant Garamond',serif;color:var(--olive)}
+  .mapTop span{display:block;font-size:11.5px;color:var(--soft);margin-top:2px;line-height:1.25}
+  #map{display:block;width:100%;height:auto;overflow:visible}
+  #map text{font:700 8.6px Manrope,sans-serif;fill:var(--ink)}
+  #map .arc{fill:none;stroke-width:1.5;stroke-linecap:round;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1)}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:11.5px;color:var(--soft)}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .chips span{font:700 12.5px Manrope;padding:8px 12px;border-radius:999px;background:#fffaf1;border:1px solid var(--line)}
+  .subT{font:800 10.5px Manrope;letter-spacing:.16em;text-transform:uppercase;color:var(--olive);margin-top:16px}
+
+  .ach{display:flex;gap:12px;align-items:center;padding:12px;margin-bottom:9px}
+  .ach .ai{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:23px;
+    background:radial-gradient(circle at 35% 30%,#fff6e3,#ecd6a8);box-shadow:inset 0 0 0 2px rgba(217,164,65,.6)}
+  .ach b{display:block;font-size:15px;font-weight:800}
+  .ach span{display:block;font-size:12.5px;color:var(--soft);margin-top:2px;line-height:1.3}
+
+  .gosha{padding:16px}
+  .gosha h3{font:700 26px/1 'Cormorant Garamond',serif}
+  .gosha p{font-size:14px;line-height:1.5;color:var(--soft);margin-top:6px}
+  .gPics{display:grid;grid-template-columns:1.2fr 1fr;grid-template-rows:116px 116px;gap:8px;margin-top:12px}
+  .gPics img{width:100%;height:100%;min-height:0;object-fit:cover;border-radius:12px;display:block}
+  .gPics img:first-child{grid-row:1/3}
+  .meow{margin-top:12px;border:0;cursor:pointer;font:800 13px Manrope;padding:11px 16px;border-radius:999px;background:var(--sage);color:#fff}
+
+  .story{padding:16px;margin-bottom:10px;position:relative}
+  .story .se{font-size:26px}
+  .story b{display:block;font:700 22px/1.1 'Cormorant Garamond',serif;margin-top:6px}
+  .story p{font-size:14px;line-height:1.55;color:var(--soft);margin-top:6px}
+
+  .menu{padding:16px}
+  .menu ul{list-style:none;margin-top:4px}
+  .menu li{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+  .menu li span{flex:1}
+  .menu li em{font-style:normal;color:var(--soft);font-size:12px}
+  .dishes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .dishes figure{position:relative}
+  .dishes img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block}
+  .dishes figcaption{font-size:11.5px;color:var(--soft);margin-top:4px;text-align:center}
+  .vinyl{display:flex;gap:14px;align-items:center;margin-top:14px;padding:12px;border-radius:16px;background:#2d241c;color:#f3ebdd}
+  .disc{flex:none;width:70px;height:70px;border-radius:50%;background:repeating-radial-gradient(circle,#111 0 2px,#1d1d1d 2px 4px);display:grid;place-items:center;animation:spin 3s linear infinite}
+  .disc::after{content:"";width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,#2d241c 0 2px,var(--terra) 3px)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .vinyl b{display:block;font:700 19px/1.1 'Cormorant Garamond',serif}
+  .vinyl span{font-size:12px;opacity:.75}
+
+  .album{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:6px 16px 14px;scrollbar-width:none}
+  .album::-webkit-scrollbar{display:none}
+  .pol{flex:none;width:66%;scroll-snap-align:center;background:#fffdf8;border-radius:6px;padding:8px 8px 0;box-shadow:0 10px 24px rgba(94,74,50,.2);transform:rotate(var(--r))}
+  .pol.wide{width:86%}
+  .pol img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:3px;background:var(--paper2)}
+  .pol.wide img{aspect-ratio:4/3}
+  .pol b{display:block;font:600 italic 17px/1.2 'Cormorant Garamond',serif;padding:9px 2px 11px;color:var(--ink)}
+  .swipe{font-size:12px;color:var(--soft);text-align:center}
+
+  .hello{padding:12px 12px 16px;text-align:center}
+  .hello img{width:100%;border-radius:14px;display:block}
+  .hello h3{font:700 26px/1.1 'Cormorant Garamond',serif;margin-top:12px}
+  .hello p{font-size:14px;color:var(--soft);margin-top:4px;line-height:1.45}
+  .wave{margin-top:12px;border:0;cursor:pointer;font:800 14px Manrope;padding:13px 20px;border-radius:999px;background:var(--mustard);color:#3b2f24}
+
+  .wishes{display:grid;gap:10px}
+  .wish{padding:16px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:transform .2s}
+  .wish:active{transform:scale(.98)}
+  .wish .wb{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:rgba(196,106,67,.12);transition:transform .5s}
+  .wish .wt{flex:1}
+  .wish .wt b{display:block;font:700 20px/1.15 'Cormorant Garamond',serif}
+  .wish .wt span{display:block;font-size:13px;color:var(--soft);margin-top:3px;line-height:1.35;max-height:0;opacity:0;overflow:hidden;transition:max-height .5s,opacity .5s}
+  .wish.open .wt span{max-height:80px;opacity:1}
+  .wish.open .wb{transform:rotate(360deg);background:rgba(138,154,107,.25)}
+  .wish .q{font-size:12px;color:var(--terra);font-weight:800}
+  .wish.open .q{display:none}
+
+  .letter{padding:22px 20px;background:#fffaf0;position:relative}
+  .letter p{font:600 19px/1.5 'Cormorant Garamond',serif;color:var(--ink)}
+  .letter p + p{margin-top:12px}
+  .sign{margin-top:16px;text-align:right;font:700 italic 24px 'Cormorant Garamond',serif;color:var(--terra)}
+  .again{display:block;margin:22px auto 0;border:1px solid var(--line);background:transparent;cursor:pointer;font:800 13px Manrope;color:var(--soft);padding:12px 18px;border-radius:999px}
+  .end{text-align:center;font-size:12px;color:var(--soft);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <button class="snd" id="snd" aria-label="Звук">🔊</button>
+
+  <!-- 1. Букет -->
+  <section class="screen active" id="s1">
+    <div class="kick">12 ноября · от мамы и папы</div>
+    <h1>Настёна,<br>распусти свой букет</h1>
+    <div class="age"><b id="age">0</b><span>лет</span></div>
+    <div class="hint" id="hint">Тапай по экрану 🌼</div>
+    <button class="go" id="go">Открыть подарок →</button>
+    <div class="bouquet"><svg id="bq" viewBox="0 0 400 520" preserveAspectRatio="xMidYMax meet"></svg></div>
+  </section>
+
+  <!-- 2. Сайт -->
+  <section class="screen" id="s2">
+    <div class="hero vis-in">
+      <div class="kick">с днём рождения</div>
+      <h2>Настёна, <em>тебе 30!</em></h2>
+      <p>Мы собрали здесь всё, из чего сделана наша девочка: места, где ты была, твои смешные истории, Гошу, любимую еду — и наши слова.</p>
+    </div>
+
+    <div class="card pass vis-in">
+      <div class="pTop">
+        <div class="ava"><img src="img/avatar.jpg" alt=""></div>
+        <div><div class="kick" style="font-size:9.5px">Паспорт именинницы</div><div class="pName">Настёна</div><div class="pSub">12.11.1996 · Владивосток<br>менеджер в ДНС</div></div>
+      </div>
+      <div class="words"><span>ответственная</span><span>с чувством юмора</span><span>заботливая</span></div>
+      <div class="rows">
+        <div><i>Суперсила</i><span>трудоголик 💼<br>умеет быстро вспыхнуть (и так же быстро остыть 😄)</span></div>
+        <div><i>Словарик</i><span>«дундук», «пунькать», «хаха»</span></div>
+        <div><i>Увлечения</i><span>сноуборд, сап, немного беговых лыж, PlayStation, природа и дача, фотоаппарат</span></div>
+        <div><i>Любит</i><span>шашлыки, креветки, пластинки — и мамину рыбу под соусом</span></div>
+      </div>
+    </div>
+
+    <div class="sec">30 лет в цифрах</div>
+    <div class="grid" id="stats"></div>
+
+    <div class="sec">Карта путешествий</div>
+    <div class="card mapCard vis-in" id="mapCard">
+      <div class="mapTop"><div><b id="mapN">0</b><span>городов и стран на карте</span></div><div><b id="mapKm">0</b><span>км до самой дальней точки — Белгорода</span></div></div>
+      <svg id="map" viewBox="0 0 360 190"></svg>
+      <div class="legend"><span><i style="background:var(--olive)"></i>дом</span><span><i style="background:var(--mustard)"></i>Россия</span><span><i style="background:var(--terra)"></i>за границей</span></div>
+      <div class="subT">Любимое Приморье</div>
+      <div class="chips" id="prim"></div>
+    </div>
+
+    <div class="sec">Достижения</div>
+    <div id="achs"></div>
+
+    <div class="sec">Гоша</div>
+    <div class="card gosha vis-in">
+      <h3>Главный мужчина в доме 🐾</h3>
+      <p>Гоша — скоттиш-фолд с ушками-конвертиками. Сидит на ручках, позирует для фото и точно знает, кто здесь самая любимая.</p>
+      <div class="gPics"><img src="img/p09.jpg" alt="" loading="lazy"><img src="img/p38.jpg" alt="" loading="lazy"><img src="img/p48.jpg" alt="" loading="lazy" style="object-position:50% 8%"></div>
+      <button class="meow" id="meow">Погладить Гошу</button>
+    </div>
+
+    <div class="sec">Истории, которые мы помним</div>
+    <div id="stories"></div>
+
+    <div class="sec">Меню именинницы</div>
+    <div class="card menu vis-in">
+      <ul>
+        <li>🍢<span>Шашлыки</span><em>на природе — обязательно</em></li>
+        <li>🦐<span>Креветки</span><em>много не бывает</em></li>
+        <li>🔥<span>Всё из аэрогриля</span><em>быстро и вкусно</em></li>
+        <li>🐟<span>Мамина рыба под соусом</span><em>фирменная</em></li>
+        <li>🥘<span>Жюльен из морепродуктов</span><em>тоже мамин</em></li>
+      </ul>
+      <div class="dishes">
+        <figure><img src="img/p67.jpg" alt="" loading="lazy"><figcaption>Та самая рыба под соусом</figcaption></figure>
+        <figure><img src="img/p65.jpg" alt="" loading="lazy"><figcaption>Жюльен — порция на всех</figcaption></figure>
+      </div>
+      <div class="vinyl"><div class="disc"></div><div><b>Пластинки по вечерам</b><span>в том числе Круг</span></div></div>
+    </div>
+
+    <div class="sec">Фотоальбом</div>
+    <div class="album" id="album"></div>
+    <div class="swipe">листай вбок →</div>
+
+    <div class="sec">Привет из Белгорода</div>
+    <div class="card hello vis-in">
+      <img src="img/p02.jpg" alt="" loading="lazy">
+      <h3>Бабушка и дедушка передают привет! 👋</h3>
+      <p>Обнимают тебя из Белгорода и поздравляют с тридцатилетием.</p>
+      <button class="wave" id="wave">Помахать в ответ 👋</button>
+    </div>
+
+    <div class="sec">Желаем тебе</div>
+    <div class="wishes" id="wishes"></div>
+
+    <div class="sec">Письмо</div>
+    <div class="card letter vis-in" id="letter"></div>
+    <button class="again" id="again">🌼 Собрать букет ещё раз</button>
+    <div class="end">сделано с любовью · 2026</div>
+  </section>
+
+  <canvas id="fx"></canvas>
+</div>
+
+<script>
+/* ============ ДАННЫЕ ============ */
+const CFG = {
+  birth: new Date(1996, 10, 12),
+  // [название, широта, долгота, тип: дом / россия / мир, [сдвиг подписи dx, dy, выравнивание] или null — без подписи]
+  places: [
+    ['Владивосток', 43.12, 131.89, 'дом', [0, 15, 'middle']],
+    ['Находка', 42.82, 132.88, 'россия', null],
+    ['Москва', 55.75, 37.62, 'россия', [7, 3, 'start']],
+    ['Белгород', 50.6, 36.6, 'россия', [7, 4, 'start']],
+    ['Новосибирск', 55.03, 82.92, 'россия', [7, 2, 'start']],
+    ['Алтай', 51.96, 85.96, 'россия', [7, 9, 'start']],
+    ['Пекин', 39.9, 116.4, 'мир', [-7, 4, 'end']],
+    ['Гонконг', 22.32, 114.17, 'мир', [7, 3, 'start']],
+    ['Санья', 18.25, 109.5, 'мир', [-7, 4, 'end']],
+    ['Филиппины', 12.5, 122.0, 'мир', [7, 4, 'start']],
+    ['Гуам', 13.44, 144.79, 'мир', [0, -8, 'middle']],
+  ],
+  primorye: ['🏖 Табунка', '🌊 Триозерье', '🛞 Окуневая', '🦔 Ежовая', '🌅 Спокойная', '🐺 Волчанец', '⛰ Витязь', '💧 Кравцовские водопады', '🏄‍♀️ сап'],
+  achievements: [
+    ['🎓', 'Выпускница', 'Закончила институт — диплом в руках, мантия на плечах'],
+    ['📈', 'Карьера в ДНС', 'Повышения одно за другим: и статус, и зарплата растут'],
+    ['🏂', 'Сноубордистка со стажем', 'На склоне — с самого детства'],
+    ['🏄‍♀️', 'Капитан сапа', 'Доска, весло и гладкая вода Приморья'],
+    ['📸', 'Глаз фотографа', 'Фотографирует так, что все просят ещё'],
+    ['🎮', 'Игрок PlayStation', 'Уровень сложности — любой'],
+    ['🚣‍♀️', 'Морской волк', 'Перевернулась с папой на лодке у самого берега — и всё равно любит море'],
+    ['🛞', 'Каскадёр бухты Окуневая', 'Квадроцикл вверх колёсами — пережито, засмеяно, внесено в семейную историю'],
+  ],
+  stories: [
+    ['👱‍♀️', 'Белые волосы', 'Когда ты была совсем маленькой, китайцы подходили потрогать твои белые волосы — такого чуда они ещё не видели. Ты была звездой без всяких стараний.'],
+    ['🎒', '«Хочу в садик»', 'Шла в садик и плакала — говорила, что потому что очень хочешь в садик. Мы до сих пор подозреваем, что ты немножко лукавила 😄'],
+    ['🚣‍♀️', 'Лодка у берега', 'Причаливали к берегу — и лодка перевернулась. Вместе с папой, вместе с тобой. Мокрые, но живые и смеющиеся.'],
+    ['🛞', 'Квадроцикл в Окуневой', 'Однажды в бухте Окуневая квадроцикл решил прокатиться колёсами вверх. Все целы — а история осталась на всю жизнь.'],
+    ['📞', 'Папа на связи', 'Что бы ни случилось на дороге — один звонок, и папа уже едет. Пять раз за пять лет — и каждый раз приехал. И приедет снова, сколько понадобится.'],
+  ],
+  // [файл, подпись, 'wide' — горизонтальное фото]
+  photos: [
+    ['p36.jpg', 'Маленькая сноубордистка'],
+    ['p43.jpg', 'Экипировка — как у профи'],
+    ['p35.jpg', 'Вся семья в одном кадре', 'wide'],
+    ['p33.jpg', 'Последний звонок', 'wide'],
+    ['p37.jpg', 'Выпускной с мамой', 'wide'],
+    ['p46.jpg', 'Институт — позади!'],
+    ['p47.jpg', 'Гордость мамы и папы', 'wide'],
+    ['p44.jpg', 'Кудряшки и бокал'],
+    ['p39.jpg', 'Песни у костра'],
+    ['p40.jpg', 'Осень, поле и стог'],
+    ['p53.jpg', 'Знакомство с альпакой'],
+    ['p52.jpg', 'Сама за рулём'],
+    ['p28.jpg', 'Офис ДНС в лягушачьих очках'],
+    ['p21.jpg', 'Сап на плечах — и к воде'],
+    ['p22.jpg', 'Капитан сапа'],
+    ['p64.jpg', 'Панамка, море и Приморье'],
+    ['p17.jpg', 'Лестница к морю'],
+    ['p16.jpg', 'Весеннее море'],
+    ['p55.jpg', 'Домик на природе'],
+    ['p61.jpg', 'Халат, берёза и полный релакс'],
+    ['p60.jpg', 'Летний вайб'],
+    ['p58.jpg', 'Закат, кофе и подруга'],
+    ['p45.jpg', 'День рождения с Гошей'],
+    ['p14.jpg', 'Букет, панамка и очки-лягушки'],
+  ],
+  wishes: [
+    ['💚', 'Здоровья', 'тебе, Гоше и всем, кого ты любишь'],
+    ['🛣', 'Спокойных дорог', 'пусть папе ты звонишь только чтобы поболтать'],
+    ['📈', 'Новых высот в работе', 'и сил оставлять работу на работе — трудоголикам тоже нужен отдых'],
+    ['🌊', 'Тёплого моря и снега', 'гладкой воды для сапа и мягкого снега для сноуборда'],
+    ['🌍', 'Новых точек на карте', 'стран, городов и бухт, где захочется остаться'],
+    ['😄', 'Поводов для «хаха»', 'и чтобы вспыхивала ты только от радости'],
+  ],
+  letter: [
+    'Настёна, доченька! Тридцать лет назад ты появилась — и наша жизнь стала совсем другой: громче, веселее и намного счастливее.',
+    'Мы видели, как маленькая девочка с белыми волосами росла, плакала по дороге в садик, вставала на сноуборд, получала диплом и шаг за шагом строила свою карьеру. Ты ответственная, заботливая и с таким чувством юмора, что рядом с тобой невозможно грустить.',
+    'Мы любим тебя за всё — за все твои плюсы и минусы, как и положено любить родного человека. Гордимся тобой каждый день. Помни: что бы ни случилось, где бы ты ни была — мы рядом, и папа всегда приедет.',
+    'С днём рождения, наша любимая! Пусть тридцать будет самым тёплым годом.',
+  ],
+  sign: 'Мама и папа',
+};
+
+/* ============ утилиты ============ */
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const fmt = n => Math.round(n).toLocaleString('ru-RU');
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+function haptic(p = 12) {
+  try { if (navigator.vibrate && navigator.vibrate(p)) return; } catch (e) {}
+  try { // iOS 18+: нативный switch даёт тактильный отклик (только внутри click)
+    const l = document.createElement('label'), i = document.createElement('input');
+    l.ariaHidden = 'true'; l.style.display = 'none'; i.type = 'checkbox'; i.setAttribute('switch', '');
+    l.appendChild(i); document.head.appendChild(l); l.click(); l.remove();
+  } catch (e) {}
+}
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id)); }
+const at = el => { const r = el.getBoundingClientRect(), a = app.getBoundingClientRect(); return [r.left - a.left + r.width / 2, r.top - a.top + r.height / 2]; };
+
+/* ============ звук: синтезируется в браузере, без файлов ============ */
+let AC, master, sfxBus, musicBus, soundOn = true;
+const PENTA = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98, 1760];
+function audio() {
+  if (!AC) {
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+    master = AC.createGain(); master.gain.value = soundOn ? 1 : 0; master.connect(AC.destination);
+    sfxBus = AC.createGain(); sfxBus.gain.value = .85; sfxBus.connect(master);
+    musicBus = AC.createGain(); musicBus.gain.value = 0; musicBus.connect(master);
+    startAmbient();
+  }
+  if (!soundOn) return null;
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function duck() { if (!musicBus) return; const t = AC.currentTime, g = musicBus.gain; g.cancelScheduledValues(t); g.setTargetAtTime(.08, t, .02); g.setTargetAtTime(.3, t + .5, .4); }
+function tone(f, t, dur, type = 'sine', vol = .25, bus = sfxBus) {
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g); g.connect(bus); o.start(t); o.stop(t + dur + .05);
+}
+function noise(t, dur, vol = .15, hp = 6000) {
+  const b = AC.createBuffer(1, AC.sampleRate * dur, AC.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const n = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  n.buffer = b; f.type = 'highpass'; f.frequency.value = hp;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  n.connect(f); f.connect(g); g.connect(sfxBus); n.start(t);
+}
+const sfx = {
+  bloom(k) { if (!audio()) return; duck(); const t = AC.currentTime, f = PENTA.at(Math.min(k, PENTA.length - 1)); tone(f, t, .7, 'triangle', .26); tone(f * 2, t + .03, .4, 'sine', .1); noise(t, .04, .06, 5000); },
+  fanfare() { if (!audio()) return; duck(); const t = AC.currentTime; [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, t + i * .13, .55, 'triangle', .22)); [523.25, 659.25, 783.99, 1046.5].forEach(f => tone(f, t + .6, 1.8, 'sine', .09)); },
+  chime() { if (!audio()) return; duck(); const t = AC.currentTime; tone(1318.5, t, .6, 'sine', .14); tone(1975.5, t + .09, .7, 'sine', .08); },
+  wish() { if (!audio()) return; duck(); const t = AC.currentTime; [1046.5, 1318.5, 1567.98, 2093].forEach((f, i) => tone(f, t + i * .07, .7, 'sine', .11)); },
+  tick() { if (!audio()) return; tone(1760, AC.currentTime, .08, 'sine', .05); },
+  purr() { if (!audio()) return; duck(); const t = AC.currentTime; for (let i = 0; i < 14; i++) noise(t + i * .07, .05, .05, 200); tone(660, t + 1, .25, 'sine', .12); tone(990, t + 1.08, .35, 'sine', .1); },
+};
+function startAmbient() {   // тихая «шкатулка»: перебор C – Am – F – G
+  const CHORDS = [[523.25, 659.25, 783.99, 1046.5], [440, 523.25, 659.25, 880], [349.23, 440, 523.25, 698.46], [392, 493.88, 587.33, 783.99]];
+  const PATTERN = [0, 2, 1, 3, 2, 1, null, 2], STEP = .44; let i = 0, next = AC.currentTime + .3;
+  function box(f, t) {
+    const o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain(), g2 = AC.createGain();
+    o.type = o2.type = 'sine'; o.frequency.value = f; o2.frequency.value = f * 2.01; g2.gain.value = .25;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.04, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + 1.6);
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(musicBus); o.start(t); o2.start(t); o.stop(t + 1.7); o2.stop(t + 1.7);
+  }
+  setInterval(() => {
+    while (next < AC.currentTime + .6) {
+      const chord = CHORDS.at(Math.floor(i / PATTERN.length) % CHORDS.length), n = PATTERN.at(i % PATTERN.length);
+      if (n !== null && Math.random() > .12) box(chord.at(n), next);
+      i++; next += STEP;
+    }
+  }, 120);
+  musicBus.gain.setTargetAtTime(.3, AC.currentTime, 2);
+}
+$('#snd').addEventListener('click', e => {
+  e.stopPropagation(); soundOn = !soundOn; $('#snd').textContent = soundOn ? '🔊' : '🔇';
+  if (!AC) { if (soundOn) audio(); return haptic(8); }
+  master.gain.cancelScheduledValues(AC.currentTime); master.gain.setValueAtTime(soundOn ? 1 : 0, AC.currentTime);
+  if (soundOn) AC.resume(); else AC.suspend();
+  haptic(8);
+});
+
+/* ============ эффекты: конфетти-лепестки ============ */
+const fx = $('#fx'), ctx = fx.getContext('2d'); let W, H, parts = [], running = false; const DPR = Math.min(devicePixelRatio || 1, 3);
+const COLORS = ['#c46a43', '#d9a441', '#c98a7a', '#8a9a6b', '#f6efe2', '#e7b8a3'];
+function resize() { W = app.clientWidth; H = app.clientHeight; fx.width = W * DPR; fx.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0); }
+function burst(x, y, n, pow = [4, 12], dir = -Math.PI / 2, spread = Math.PI * 2, cols = COLORS, kind = 'p') {
+  for (let i = 0; i < n; i++) {
+    const a = dir + rnd(-spread / 2, spread / 2), v = rnd(...pow);
+    parts.push({ k: kind, x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, rot: rnd(0, 6), vr: rnd(-.12, .12), w: rnd(7, 12), h: rnd(4, 7), tilt: rnd(0, 6), vt: rnd(.05, .15), c: pick(cols), life: 1, e: kind.length > 1 ? kind : null });
+  }
+  if (!running) { running = true; requestAnimationFrame(loop); }
+}
+function petalRain(n = 90) { for (let i = 0; i < n; i++) setTimeout(() => burst(rnd(0, W), -20, 1, [1, 3], Math.PI / 2, 1), i * 30); }
+function loop() {
+  ctx.clearRect(0, 0, W, H); parts = parts.filter(p => p.life > 0 && p.y < H + 60);
+  for (const p of parts) {
+    p.vx *= .985; p.vy = Math.min(p.vy * .985 + .12, 2.4); p.x += p.vx + Math.sin(p.tilt) * .8; p.y += p.vy; p.rot += p.vr; p.tilt += p.vt;
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    if (p.e) { ctx.font = '24px serif'; ctx.textAlign = 'center'; ctx.fillText(p.e, 0, 0); }
+    else { ctx.scale(1, Math.cos(p.tilt)); ctx.fillStyle = p.c; ctx.beginPath(); ctx.ellipse(0, 0, p.w / 2, p.h / 2, 0, 0, 7); ctx.fill(); }
+    ctx.restore();
+  }
+  if (parts.length) requestAnimationFrame(loop); else { running = false; ctx.clearRect(0, 0, W, H); }
+}
+
+/* ============ 1. букет: 31 цветок (нечётное число — для живого букета), возраст растёт до 30 ============ */
+const VASE = [200, 470], N = 31, PER_TAP = 3;
+// тип цветка, цвет лепестков, цвет серединки
+const KINDS = [['daisy', '#fbf6ea', '#d9a441'], ['poppy', '#c46a43', '#3b2f24'], ['cosmos', '#c98a7a', '#d9a441'], ['tulip', '#d9a441', '#b07a22'],
+  ['cosmos', '#e7b8a3', '#c46a43'], ['poppy', '#d9a441', '#5e3a1a'], ['daisy', '#fbf6ea', '#c46a43'], ['tulip', '#c98a7a', '#a8532f'], ['poppy', '#c98a7a', '#3b2f24'], ['cosmos', '#c46a43', '#d9a441']];
+// раскладка: первый — белая ромашка в центре и крупнее всех, следующие 6 — кругом вокруг неё,
+// остальные 24 — «подсолнухом» (золотой угол) по внешнему кольцу купола
+const FLOWERS = Array.from({ length: N }, (_, i) => {
+  let r, a, s;
+  if (i === 0) { r = 0; a = 0; s = 1.2; }
+  else if (i < 7) { r = .5; a = (i - 1) * Math.PI / 3 - Math.PI / 2 + .3; s = .9; }
+  else { r = .74 + .26 * Math.sqrt((i - 7) / (N - 8)); a = i * 2.39996; s = .64 + (i * 7 % 5) * .03; }
+  return [200 + 150 * r * Math.cos(a), 212 + 120 * r * Math.sin(a), ...KINDS[i % KINDS.length], s];
+});
+function flowerSVG([x, y, type, c, mid, s], i) {
+  let o = '';
+  if (type === 'daisy') { for (let k = 0; k < 14; k++) o += `<ellipse cx="0" cy="-17" rx="5.2" ry="14" fill="${c}" stroke="rgba(59,47,36,.12)" transform="rotate(${k * 360 / 14})"/>`; o += `<circle r="9" fill="${mid}"/>`; }
+  if (type === 'poppy') { for (let k = 0; k < 5; k++) o += `<path d="M0 0 C-18 -8 -16 -30 0 -28 C16 -30 18 -8 0 0Z" fill="${c}" opacity=".95" transform="rotate(${k * 72})"/>`; o += `<circle r="7" fill="${mid}"/><g stroke="${mid}" stroke-width="1.4">${Array.from({ length: 8 }, (_, k) => `<path d="M0 0 L${(Math.cos(k * .785) * 11).toFixed(1)} ${(Math.sin(k * .785) * 11).toFixed(1)}"/>`).join('')}</g>`; }
+  if (type === 'cosmos') { for (let k = 0; k < 8; k++) o += `<path d="M0 0 C-9 -6 -10 -24 -4 -27 L0 -23 L4 -27 C10 -24 9 -6 0 0Z" fill="${c}" transform="rotate(${k * 45})"/>`; o += `<circle r="6.5" fill="${mid}"/>`; }
+  if (type === 'tulip') o += `<path d="M-15 -4 C-17 -22 -8 -28 -6 -28 L0 -18 L6 -28 C8 -28 17 -22 15 -4 C13 10 -13 10 -15 -4Z" fill="${c}"/><path d="M-6 -28 C-2 -20 2 -20 6 -28 L0 -18Z" fill="${mid}" opacity=".5"/><path d="M0 -18 V6" stroke="${mid}" stroke-width="1.2" opacity=".45"/>`;
+  return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${s})"><g class="flw" style="transform-box:view-box;transform-origin:0 0">${o}</g></g>`;
+}
+function buildBouquet() {
+  let stems = '', leaves = '', heads = [];
+  FLOWERS.forEach((f, i) => {
+    // стебель выходит из горлышка со стороны своего цветка (центральный — ровно по центру), идёт вверх и плавно уходит к цветку
+    const [x, y] = f, sx = VASE[0] + (x - VASE[0]) * .13, sy = 478, c1 = [sx, 395], c2 = [x, y + 80];
+    const B = t => [0, 1].map(k => (1 - t) ** 3 * [sx, sy][k] + 3 * (1 - t) ** 2 * t * c1[k] + 3 * (1 - t) * t * t * c2[k] + t ** 3 * [x, y][k]);
+    const sw = `class="sw" data-i="${i}" style="transform-origin:${sx.toFixed(1)}px ${sy}px;animation-delay:${(-i * .37).toFixed(2)}s"`;
+    stems += `<path ${sw.replace('class="sw"', 'class="sw stem"')} d="M${sx.toFixed(1)} ${sy} C${c1} ${c2.map(v => v.toFixed(1))} ${x.toFixed(1)} ${y.toFixed(1)}"/>`;
+    if (i % 2 === 0) {   // листик — на каждом втором стебле, чтобы букет не был лохматым
+      const t = .5 + (i % 3) * .08, [lx, ly] = B(t), [ax, ay] = B(t + .02), ang = Math.atan2(ay - ly, ax - lx) * 180 / Math.PI, side = i % 4 ? 1 : -1;
+      leaves += `<g ${sw}><g transform="translate(${lx.toFixed(1)} ${ly.toFixed(1)}) rotate(${(ang + side * 55).toFixed(0)})"><path class="leaf" style="transform-box:view-box;transform-origin:0 0" d="M0 0 q12 -9 26 0 q-14 9 -26 0z"/></g></g>`;
+    }
+    heads.push([y, `<g ${sw}>${flowerSVG(f, i)}</g>`]);
+  });
+  // головки сверху вниз: нижние ложатся поверх верхних, как в настоящем букете
+  let s = `<defs><linearGradient id="vz" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a8532f"/><stop offset=".5" stop-color="#c97a52"/><stop offset="1" stop-color="#9a4a29"/></linearGradient></defs>` +
+    stems + leaves + heads.sort((a, b) => a[0] - b[0]).map(h => h[1]).join('');
+  // кувшин из глины
+  s += `<path d="M160 470 C150 440 165 430 170 425 L230 425 C235 430 250 440 240 470 L246 500 C250 515 238 520 200 520 C162 520 150 515 154 500Z" fill="url(#vz)"/>` +
+    `<path d="M168 425 H232 V432 H168Z" fill="#8f4325"/><path d="M165 478 C190 486 210 486 235 478" stroke="#f3ebdd" stroke-width="2" fill="none" opacity=".5"/>` +
+    `<path d="M170 492 C190 499 210 499 230 492" stroke="#f3ebdd" stroke-width="1.5" fill="none" opacity=".35"/>`;
+  $('#bq').innerHTML = s;
+  $('#bq').querySelectorAll('.stem').forEach(p => { const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
+}
+let bloomed = 0, taps = 0, done = false;
+function bloomOne(i) {
+  const els = $('#bq').querySelectorAll(`[data-i="${i}"]`);
+  els.forEach(el => { el.classList.add('on'); if (el.classList.contains('stem')) el.style.strokeDashoffset = 0; });
+  setTimeout(() => { const h = [...els].pop().querySelector('.flw'); if (!h) return; const r = h.getBoundingClientRect(), a = app.getBoundingClientRect(); burst(r.left - a.left + r.width / 2, r.top - a.top + r.height / 2, 6, [2, 5]); }, 700);
+}
+function grow() {
+  if (done) return;
+  for (let k = 0; k < PER_TAP && bloomed < N; k++) setTimeout(bloomOne, k * 140, bloomed++);
+  taps++; haptic(14); sfx.bloom(taps - 1);
+  $('#age').textContent = Math.round(bloomed / N * 30); $('#age').classList.add('pulse'); setTimeout(() => $('#age').classList.remove('pulse'), 220);
+  const hints = ['Ещё! 🌸', 'Распускается…', 'Ещё цветочки 🌼', 'Букет растёт!', 'Ещё, ещё 🌷'];
+  $('#hint').textContent = bloomed < N ? hints[Math.min(Math.floor(taps / 2), hints.length - 1)] : '';
+  if (bloomed === N) {
+    done = true;
+    setTimeout(() => {
+      $('#bq').querySelectorAll('.sw').forEach(f => f.classList.add('sway'));
+      $('#hint').textContent = 'С днём рождения, Настёна! 💐'; sfx.fanfare(); haptic([30, 60, 30, 60, 90]);
+      petalRain(110); burst(W / 2, H * .35, 70, [6, 14]);
+      $('#go').classList.add('show');
+    }, 1100);
+  }
+}
+$('#s1').addEventListener('click', e => { if (e.target.closest('#go')) return; audio(); grow(); });
+$('#go').addEventListener('click', e => { e.stopPropagation(); haptic(16); sfx.chime(); show('s2'); $('#s2').scrollTop = 0; });
+
+/* ============ 2. содержимое ============ */
+const HOME = [43.12, 131.89];
+function km([a, b], [c, d]) { const R = 6371, r = Math.PI / 180, dl = (c - a) * r, dn = (d - b) * r; const h = Math.sin(dl / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); }
+const proj = (lat, lon) => [14 + (lon - 33) / 117 * 332, 10 + (60 - lat) / 52 * 170];
+const COL = { 'дом': '#5e6b3a', 'россия': '#d9a441', 'мир': '#c46a43' };
+function buildMap() {
+  const [hx, hy] = proj(...HOME); let s = '', far = 0;
+  CFG.places.forEach(([n, lat, lon, t, off]) => {
+    const [x, y] = proj(lat, lon), c = COL[t];
+    if (t !== 'дом') { far = Math.max(far, km(HOME, [lat, lon])); s += `<path class="arc" d="M${hx} ${hy} Q${(hx + x) / 2} ${Math.min(hy, y) - 28} ${x} ${y}" stroke="${c}"/>`; }
+    s += `<circle cx="${x}" cy="${y}" r="${t === 'дом' ? 7 : 5}" fill="${c}" opacity=".28"/><circle cx="${x}" cy="${y}" r="${t === 'дом' ? 4 : 2.8}" fill="${c}"/>`;
+    if (off) s += `<text x="${x + off[0]}" y="${y + off[1]}" text-anchor="${off[2]}">${n}</text>`;
+  });
+  $('#map').innerHTML = s;
+  $('#map').querySelectorAll('.arc').forEach(a => { const L = a.getTotalLength(); a.style.strokeDasharray = L; a.style.strokeDashoffset = L; });
+  $('#mapCard')._far = far;
+}
+function build() {
+  const ms = Date.now() - CFG.birth;
+  const stats = [
+    ['🌍', fmt(ms / 864e5), 'дней на этой планете — и каждый мы рады, что ты есть', 'wide'],
+    ['⏳', fmt(ms / 36e5), 'часов'],
+    ['❤️', fmt(ms / 6e4 * 75 / 1e6) + ' млн', 'ударов сердца'],
+    ['🗺', String(CFG.places.length), 'городов и стран'],
+    ['🏖', String(CFG.primorye.length - 1), 'любимых мест в Приморье'],
+    ['📞', '1 звонок', 'и папа уже едет — в любое время'],
+    ['🐾', '1', 'Гоша — и этого достаточно'],
+  ];
+  $('#stats').innerHTML = stats.map(([i, v, l, w]) => `<div class="card tile vis-in ${w || ''}"><div class="ic">${i}</div><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  $('#prim').innerHTML = CFG.primorye.map(p => `<span>${p}</span>`).join('');
+  $('#achs').innerHTML = CFG.achievements.map(([i, t, d]) => `<div class="card ach vis-in"><div class="ai">${i}</div><div><b>${t}</b><span>${d}</span></div></div>`).join('');
+  $('#stories').innerHTML = CFG.stories.map(([e, t, x]) => `<div class="card story vis-in"><div class="se">${e}</div><b>${t}</b><p>${x}</p></div>`).join('');
+  $('#album').innerHTML = CFG.photos.map(([f, c, cl], i) => `<div class="pol ${cl || ''}" style="--r:${[-2, 1.5, -1, 2][i % 4]}deg"><img src="img/${f}" alt="" loading="lazy"><b>${c}</b></div>`).join('');
+  $('#wishes').innerHTML = CFG.wishes.map(([e, t, d]) => `<div class="card wish vis-in"><div class="wb">${e}</div><div class="wt"><b>${t}</b><span>${d}</span></div><div class="q">тапни</div></div>`).join('');
+  $('#letter').innerHTML = CFG.letter.map(p => `<p>${p}</p>`).join('') + `<div class="sign">${CFG.sign} 💐</div>`;
+  buildMap();
+}
+function countUp(el, to) { const t0 = performance.now(); const f = t => { const k = Math.min(1, (t - t0) / 1600); el.textContent = fmt(to * (1 - Math.pow(1 - k, 4))); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
+let io;
+function observe() {
+  io = new IntersectionObserver(es => es.forEach(en => {
+    if (!en.isIntersecting) return; const el = en.target; io.unobserve(el); el.classList.add('vis');
+    if (el.classList.contains('ach')) setTimeout(() => { sfx.chime(); haptic([10, 30, 10]); }, 250);
+    if (el.id === 'mapCard') { el.querySelectorAll('.arc').forEach((a, i) => setTimeout(() => { a.style.strokeDashoffset = 0; haptic(6); sfx.tick(); }, 200 + i * 260)); countUp($('#mapN'), CFG.places.length); countUp($('#mapKm'), el._far); }
+  }), { root: $('#s2'), threshold: .2 });
+  document.querySelectorAll('#s2 .vis-in').forEach(el => io.observe(el));
+}
+
+$('#wishes').addEventListener('click', e => {
+  const w = e.target.closest('.wish'); if (!w || w.classList.contains('open')) return;
+  w.classList.add('open'); haptic([12, 40, 12]); sfx.wish(); burst(...at(w.querySelector('.wb')), 22, [3, 8]);
+});
+$('#meow').addEventListener('click', e => { haptic([8, 30, 8, 30, 8, 30, 8]); sfx.purr(); burst(...at(e.currentTarget), 10, [3, 7], -Math.PI / 2, 1.6, COLORS, '🐾'); e.currentTarget.textContent = 'Мррр… ещё! 🐾'; });
+$('#wave').addEventListener('click', e => { haptic([20, 50, 20]); sfx.chime(); burst(...at(e.currentTarget), 14, [4, 9], -Math.PI / 2, 1.8, COLORS, '👋'); e.currentTarget.textContent = 'Привет улетел в Белгород! 💌'; });
+$('#again').addEventListener('click', () => {
+  haptic(10); taps = 0; bloomed = 0; done = false; $('#age').textContent = 0; $('#hint').textContent = 'Тапай по экрану 🌼'; $('#go').classList.remove('show');
+  buildBouquet(); show('s1');
+});
+
+/* ============ старт ============ */
+addEventListener('resize', resize); resize();
+buildBouquet(); build(); observe();
+</script>
+</body>
+</html>
