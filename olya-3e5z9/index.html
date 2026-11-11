@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#bfe9ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Оля, с днём рождения! 🏔</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800;900&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#bfe9ff; --ink:#0d3550; --soft:rgba(13,53,80,.72); --sea:#1683c7; --teal:#14a3a0; --green:#2f9e44; --leaf:#7ad37a; --sun:#ffc94d; --coral:#ff6b5b;
+    --card:rgba(255,255,255,.72); --stroke:rgba(13,53,80,.12);
+    --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;background:#dff4ff}
+  body{font-family:Manrope,system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:manipulation}
+  .app{position:fixed;inset:0;max-width:460px;margin:0 auto;overflow:hidden;background:linear-gradient(180deg,#9fdcff 0%,#d9f3ff 45%,#f2fff4 100%)}
+  canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  #fx{z-index:90}
+  .disco{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;transition:opacity .3s;mix-blend-mode:multiply}
+  .disco.on{opacity:.55;animation:disco .5s steps(1) infinite}
+  @keyframes disco{0%{background:#ff6bd6}25%{background:#5ee7ff}50%{background:#ffe066}75%{background:#7dff8a}}
+  .snd{position:absolute;z-index:95;top:calc(var(--safe-t) + 12px);right:12px;width:42px;height:42px;border-radius:50%;border:1px solid var(--stroke);background:var(--card);font-size:18px;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .scene{position:absolute;left:0;right:0;bottom:0;z-index:1;pointer-events:none;transition:transform 1.2s cubic-bezier(.2,.8,.2,1),opacity 1s}
+  .scene svg{display:block;width:100%;height:auto}
+  .app.scrolled .scene{transform:translateY(40%);opacity:.45}
+  .clouds{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .cl{position:absolute;font-size:46px;opacity:.85;animation:float 40s linear infinite}
+  @keyframes float{from{transform:translateX(-120px)}to{transform:translateX(520px)}}
+
+  .screen{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;padding:calc(var(--safe-t) + 20px) 16px calc(var(--safe-b) + 26px);
+    opacity:0;visibility:hidden;transform:translateY(30px);transition:opacity .7s,transform .7s cubic-bezier(.2,.8,.2,1),visibility 0s .7s}
+  .screen.active{opacity:1;visibility:visible;transform:none;transition:opacity .7s,transform .7s cubic-bezier(.2,.8,.2,1)}
+  .scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .scroll::-webkit-scrollbar{display:none}
+  .scroll > *{flex-shrink:0}
+  .btn{margin:22px auto 0;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;font:800 15px/1 Unbounded,sans-serif;color:#fff;
+    padding:18px 26px;border-radius:999px;background:linear-gradient(135deg,var(--teal),var(--green));box-shadow:0 10px 26px rgba(20,163,160,.35);transition:transform .15s}
+  .btn:active{transform:scale(.94)}
+  .pill{display:inline-block;font:700 11px/1 Unbounded,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:8px 12px;border-radius:999px;background:var(--card);border:1px solid var(--stroke)}
+  .fade{opacity:0;transform:translateY(16px);transition:all .7s;pointer-events:none}
+  .fade.in{opacity:1;transform:none;pointer-events:auto}
+
+  /* 1. восхождение */
+  #s1{cursor:pointer;text-align:center}
+  .s1top{transition:opacity .5s}
+  .s1top h1{font:900 26px/1.12 Unbounded,sans-serif;margin-top:12px}
+  .alt{margin-top:10px;font:900 40px/1 Unbounded,sans-serif;color:var(--sea)}
+  .alt small{font:800 14px Unbounded;margin-left:4px}
+  .hint{margin-top:8px;font-weight:800;font-size:14.5px;animation:breathe 2s ease-in-out infinite}
+  @keyframes breathe{50%{opacity:.35}}
+  /* дальние хребты: чем дальше, тем светлее и голубее (воздушная перспектива) */
+  .ranges{position:absolute;left:0;right:0;bottom:0;height:72%;pointer-events:none}
+  .ranges svg{display:block;width:100%;height:100%}
+  .mount{position:absolute;left:0;right:0;bottom:0;height:62%;pointer-events:none}
+  .mount svg{width:100%;height:100%}
+  #climber{position:absolute;left:0;top:0;font-size:34px;line-height:1;will-change:transform}
+  #climber.ready{transition:transform .55s cubic-bezier(.3,1.4,.5,1)}
+  #flag{position:absolute;font-size:34px;transform:translate(-20%,-100%) scale(0);transition:transform .6s cubic-bezier(.3,1.8,.5,1)}
+  #flag.in{transform:translate(-20%,-100%) scale(1)}
+  .ripple{position:absolute;z-index:40;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:2px solid var(--teal);pointer-events:none;animation:rip .6s ease-out forwards}
+  @keyframes rip{to{transform:scale(9);opacity:0}}
+  .greet{position:absolute;left:0;right:0;top:calc(var(--safe-t) + 24px);padding:0 18px;opacity:0;pointer-events:none;transition:opacity .5s}
+  .greet.show{opacity:1;pointer-events:auto}
+  .greet h1{font:900 34px/1.08 Unbounded,sans-serif}
+  .greet h1 em{font-style:normal;color:var(--teal)}
+  .greet p{margin-top:10px;font-weight:800;color:var(--soft)}
+
+  /* 2. основной */
+  .head{text-align:center;margin:8px 0 6px}
+  .head h2{font:900 28px/1.1 Unbounded,sans-serif;margin-top:12px}
+  .head h2 em{font-style:normal;color:var(--teal)}
+  .head p{color:var(--soft);margin-top:8px;font-size:14px}
+  .secT{font:800 12px/1 Unbounded,sans-serif;letter-spacing:.16em;text-transform:uppercase;margin:30px 2px 12px;display:flex;align-items:center;gap:8px;color:var(--sea)}
+  .secT::after{content:"";flex:1;height:1px;background:var(--stroke)}
+  .card{border-radius:22px;background:var(--card);border:1px solid var(--stroke);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .vis-in{opacity:0;transform:translateY(22px);transition:all .6s cubic-bezier(.2,.8,.2,1)}
+  .vis-in.vis{opacity:1;transform:none}
+
+  .player{position:relative;padding:18px;overflow:hidden}
+  .player::after{content:"";position:absolute;inset:-50%;background:linear-gradient(115deg,transparent 45%,rgba(255,255,255,.5) 50%,transparent 55%);animation:shine 4s infinite;pointer-events:none}
+  @keyframes shine{0%{transform:translateX(-60%)}60%,100%{transform:translateX(60%)}}
+  .pRow{display:flex;gap:14px;align-items:center}
+  .avatar{flex:none;width:76px;height:76px;border-radius:50%;overflow:hidden;background:linear-gradient(180deg,#c3c8d2,#9aa1ae);box-shadow:0 0 0 3px var(--teal)}
+  .avatar svg,.avatar img{display:block;width:100%;height:100%;object-fit:cover}
+  .pName{font:900 22px/1.1 Unbounded,sans-serif}
+  .pRole{font-size:12.5px;color:var(--soft);margin-top:5px;line-height:1.45}
+  .likes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .likes div{border-radius:14px;padding:9px 6px;text-align:center;background:rgba(20,163,160,.1)}
+  .likes b{display:block;font-size:20px}
+  .likes span{display:block;font-size:10.5px;color:var(--soft);margin-top:3px;line-height:1.2}
+  .lvl{margin-top:14px;display:flex;justify-content:space-between;font:700 11px/1 Unbounded,sans-serif}
+  .bar{height:12px;border-radius:99px;background:rgba(13,53,80,.12);margin-top:8px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--sea),var(--teal),var(--leaf));transition:width 2.2s cubic-bezier(.2,.8,.2,1)}
+  .lvlUp{position:absolute;left:8px;top:10px;z-index:2;font:900 11px/1 Unbounded;color:#fff;background:var(--coral);padding:7px 9px;border-radius:8px;transform:scale(0) rotate(-10deg);transition:transform .5s cubic-bezier(.3,1.8,.5,1)}
+  .lvlUp.in{transform:scale(1) rotate(-6deg)}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{padding:15px 14px}
+  .tile.wide{grid-column:span 2}
+  .tile .ic{font-size:22px}
+  .tile .v{font:900 23px/1.1 Unbounded,sans-serif;margin-top:8px;color:var(--ink)}
+  .tile.wide .v{font-size:32px;color:var(--teal)}
+  .tile .l{font-size:12.5px;color:var(--soft);margin-top:6px;line-height:1.3}
+
+  #map{display:block;width:100%;height:auto;overflow:visible}
+  #map text{font:700 9px Manrope,sans-serif;fill:var(--ink)}
+  #map .arc{fill:none;stroke-width:1.6;stroke-linecap:round;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1)}
+  .mapCard{padding:14px}
+  #map .dreamArc{fill:none;stroke:#ff7aa8;stroke-width:1.4;stroke-dasharray:2 4;stroke-linecap:round;opacity:0;transition:opacity 1s 2.4s}
+  #map .dreamDot{opacity:0;transition:opacity 1s 2.6s}
+  #mapCard.vis #map .dreamArc,#mapCard.vis #map .dreamDot{opacity:1}
+  #map .dreamDot circle:first-child{transform-box:fill-box;transform-origin:center;animation:dreamPulse 1.8s ease-in-out infinite}
+  @keyframes dreamPulse{50%{transform:scale(1.8);opacity:.1}}
+  .mapTop{display:flex;gap:10px;margin-bottom:8px}
+  .mapTop div{flex:1}
+  .mapTop b{display:block;font:900 26px/1 Unbounded;color:var(--teal)}
+  .mapTop span{display:block;font-size:11.5px;color:var(--soft);margin-top:4px;line-height:1.25}
+  .row{display:flex;gap:12px;align-items:center;padding:12px 13px;margin-top:8px}
+  .row .e{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:rgba(20,163,160,.12)}
+  .row b{display:block;font-size:15px;font-weight:800}
+  .row span{display:block;font-size:12.5px;color:var(--soft);margin-top:2px;line-height:1.35}
+  .row .tag{margin-left:auto;flex:none;font:800 9.5px Unbounded;letter-spacing:.06em;text-transform:uppercase;padding:6px 8px;border-radius:7px;color:var(--teal);border:1px solid rgba(20,163,160,.4)}
+  .pets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .pet{padding:14px 8px;text-align:center}
+  .pet .e{font-size:38px;line-height:0;display:flex;justify-content:center}
+  .pet b{display:block;font:900 15px Unbounded;margin-top:6px}
+  .pet span{display:block;font-size:11.5px;color:var(--soft);margin-top:4px;line-height:1.3}
+  .son{padding:18px;background:linear-gradient(135deg,rgba(20,163,160,.16),rgba(255,255,255,.75))}
+  .son h3{font:900 20px/1.15 Unbounded}
+  .son p{font-size:14px;line-height:1.5;color:var(--soft);margin-top:8px}
+  .steps17{display:flex;justify-content:space-between;margin-top:14px;font-size:22px;position:relative}
+  .steps17::before{content:"";position:absolute;left:12px;right:12px;top:50%;height:2px;background:repeating-linear-gradient(90deg,var(--teal) 0 6px,transparent 6px 12px)}
+  .steps17 span{position:relative;background:#fff;border-radius:50%;width:40px;height:40px;display:grid;place-items:center;box-shadow:0 0 0 2px var(--teal)}
+  .ach{display:flex;gap:12px;align-items:center;padding:12px;margin-bottom:10px}
+  .ach .ai{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:radial-gradient(circle at 30% 30%,rgba(255,201,77,.6),rgba(255,201,77,.15));border:1px solid rgba(255,201,77,.6)}
+  .ach b{display:block;font-size:15px;font-weight:800}
+  .ach span{display:block;font-size:12.5px;color:var(--soft);margin-top:2px;line-height:1.3}
+  .ach.lock{border:1.5px dashed rgba(255,122,168,.7)}
+  .ach.lock .ai{background:rgba(255,122,168,.12);border-color:rgba(255,122,168,.6)}
+  .ach.lock .rar{color:#d6457a;border-color:rgba(255,122,168,.8)}
+  .ach .rar{margin-left:auto;flex:none;font:800 9px Unbounded;letter-spacing:.08em;text-transform:uppercase;padding:6px 7px;border-radius:6px;color:#b07a00;border:1px solid rgba(255,201,77,.8)}
+  .story{padding:16px;margin-bottom:10px}
+  .story .se{font-size:30px}
+  .story b{display:block;font:800 17px/1.25 Unbounded;margin-top:6px}
+  .story p{font-size:14px;line-height:1.5;color:var(--soft);margin-top:6px}
+  .album{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:6px 16px 12px;scrollbar-width:none}
+  .album::-webkit-scrollbar{display:none}
+  .pol{flex:none;width:62%;scroll-snap-align:center;background:#fffdf7;border-radius:6px;padding:8px 8px 0;box-shadow:0 10px 24px rgba(13,53,80,.2);transform:rotate(var(--r))}
+  .pol .ph{aspect-ratio:4/5;border-radius:3px;display:grid;place-items:center;text-align:center;font-size:40px;background:linear-gradient(160deg,#9fdcff,#7ad37a)}
+  .pol.wide{width:84%}
+  .pol.wide .ph{aspect-ratio:4/3}
+  .pol img.ph{display:block;width:100%;object-fit:cover;background:#dfe9ef}
+  .pol .ph small{display:block;font:700 12px Manrope;color:var(--ink);margin-top:4px}
+  .pol b{display:block;font:800 13px Manrope;padding:9px 2px 11px}
+  .greets{display:grid;gap:10px}
+  .gc{padding:14px 16px;border:1.5px dashed rgba(20,163,160,.5)}
+  .gc b{display:block;font-weight:800}
+  .gc span{display:block;font-size:13px;color:var(--soft);margin-top:4px;font-style:italic}
+  .danceBtn{display:block;width:100%;margin-top:14px;border:0;cursor:pointer;padding:20px;border-radius:22px;font:900 18px Unbounded;color:#fff;
+    background:linear-gradient(135deg,#ff6bd6,#7b5cff,#5ee7ff);background-size:200% 200%;animation:grad 3s ease infinite;box-shadow:0 12px 28px rgba(123,92,255,.35)}
+  .danceBtn small{display:block;font:700 12px Manrope;margin-top:6px;opacity:.9}
+  @keyframes grad{50%{background-position:100% 100%}}
+
+  /* 3. рюкзак желаний */
+  #s3{text-align:center}
+  /* тень — отдельным пятном, без filter: фильтр при вращении оставлял следы на фоне */
+  .pack{position:relative;display:block;width:140px;margin:18px auto 0;font-size:110px;line-height:1.15;text-align:center;cursor:pointer;will-change:transform;transform:translateZ(0)}
+  .packWrap{position:relative}
+  .packWrap::after{content:"";position:absolute;left:50%;bottom:-4px;width:96px;height:16px;margin-left:-48px;border-radius:50%;background:radial-gradient(rgba(13,53,80,.22),transparent 70%)}
+  .pack.shake{animation:pshake .5s}
+  @keyframes pshake{20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(3deg)}}
+  .cnt{font:700 12px Unbounded;letter-spacing:.14em;color:var(--soft);margin-top:6px}
+  .wish{display:flex;gap:12px;align-items:center;padding:14px;margin-top:10px;text-align:left;animation:pop .7s cubic-bezier(.3,1.5,.5,1) both}
+  @keyframes pop{from{opacity:0;transform:translateY(-50px) scale(.6)}}
+  .wish .e{font-size:28px}
+  .wish b{display:block;font-weight:800;font-size:15.5px}
+  .wish span{display:block;font-size:13px;color:var(--soft);margin-top:2px}
+  .letter{display:none;margin-top:16px;padding:24px 18px;text-align:center}
+  .letter.show{display:block;animation:pop .9s both}
+  .letter h3{font:900 26px/1.1 Unbounded}
+  .letter h3 em{font-style:normal;color:var(--teal)}
+  .letter p{margin-top:12px;font-size:15px;line-height:1.55;color:var(--soft);text-align:left}
+  .letter .sign{margin-top:14px;font:900 15px Unbounded;color:var(--teal);text-align:center}
+  .ghost{background:#fff;color:var(--ink);box-shadow:none;border:1px solid var(--stroke)}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="clouds"><span class="cl" style="top:9%;animation-delay:-5s">☁️</span><span class="cl" style="top:20%;animation-delay:-22s;font-size:32px">☁️</span><span class="cl" style="top:31%;animation-delay:-33s;font-size:38px">☁️</span></div>
+  <div class="scene" id="scene">
+    <svg viewBox="0 0 400 120" preserveAspectRatio="none"><path d="M0 60 Q50 40 100 55 T200 50 T300 58 T400 48 V120 H0Z" fill="#7ad37a"/><path d="M0 85 Q60 70 120 82 T240 78 T400 84 V120 H0Z" fill="#2f9e44"/><path d="M0 100 Q100 92 200 100 T400 98 V120 H0Z" fill="#1683c7"/></svg>
+  </div>
+  <div class="disco" id="disco"></div>
+  <button class="snd" id="snd" aria-label="Звук">🔊</button>
+
+  <!-- 1. ВОСХОЖДЕНИЕ -->
+  <section class="screen active" id="s1">
+    <div class="s1top" id="s1top">
+      <span class="pill">Экспедиция «47»</span>
+      <h1>Помоги Оле подняться<br>на Эльбрус</h1>
+      <div class="alt"><span id="alt">0</span><small>м</small></div>
+      <div class="hint" id="hint">Тапай по экрану ⛰</div>
+    </div>
+    <div class="greet" id="greet">
+      <h1>С днём рождения,<br><em>Оля</em>! 🎉</h1>
+      <p>Чуть позже 5 октября — зато от всей души! 5 642 метра позади, впереди новая вершина: 47!</p>
+      <button class="btn fade" id="toMain">Смотреть экспедицию →</button>
+    </div>
+    <div class="ranges" aria-hidden="true"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".55"/></linearGradient><clipPath id="rg0"><path d="M0 170 L40 140 L75 155 L120 105 L150 125 L190 95 L235 130 L270 110 L310 140 L350 100 L400 135 V300 H0Z"/></clipPath><clipPath id="rg1"><path d="M0 200 L50 165 L90 185 L140 150 L175 175 L225 140 L265 170 L300 150 L345 180 L400 160 V300 H0Z"/></clipPath><clipPath id="rg2"><path d="M0 235 L45 205 L95 228 L150 195 L200 225 L255 200 L310 230 L360 205 L400 222 V300 H0Z"/></clipPath></defs><path d="M0 170 L40 140 L75 155 L120 105 L150 125 L190 95 L235 130 L270 110 L310 140 L350 100 L400 135 V300 H0Z" fill="#e4eff9"/><path d="M0 0 H400 V122 L400 124 L380 118 L360 123 L340 119 L320 126 L300 120 L280 125 L260 124 L240 118 L220 123 L200 119 L180 126 L160 120 L140 125 L120 124 L100 118 L80 123 L60 119 L40 126 L20 120 L0 125 Z" fill="#ffffff" clip-path="url(#rg0)"/><rect x="0" y="120" width="400" height="180" fill="url(#haze)"/><path d="M0 200 L50 165 L90 185 L140 150 L175 175 L225 140 L265 170 L300 150 L345 180 L400 160 V300 H0Z" fill="#cfe0f0"/><path d="M0 0 H400 V164 L400 162 L380 167 L360 166 L340 160 L320 165 L300 161 L280 168 L260 162 L240 167 L220 166 L200 160 L180 165 L160 161 L140 168 L120 162 L100 167 L80 166 L60 160 L40 165 L20 161 L0 168 Z" fill="#fbfdff" clip-path="url(#rg1)"/><rect x="0" y="160" width="400" height="140" fill="url(#haze)"/><path d="M0 235 L45 205 L95 228 L150 195 L200 225 L255 200 L310 230 L360 205 L400 222 V300 H0Z" fill="#b4cce3"/><path d="M0 0 H400 V214 L400 211 L380 218 L360 212 L340 217 L320 216 L300 210 L280 215 L260 211 L240 218 L220 212 L200 217 L180 216 L160 210 L140 215 L120 211 L100 218 L80 212 L60 217 L40 216 L20 210 L0 215 Z" fill="#f4f9ff" clip-path="url(#rg2)"/><rect x="0" y="200" width="400" height="100" fill="url(#haze)"/></svg></div>
+    <div class="mount">
+      <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMax meet" id="mtn">
+        <path d="M0 400 L60 300 L120 240 L170 120 L205 70 L230 110 L262 82 L300 170 L350 260 L400 330 V400Z" fill="#5c7fa3"/>
+        <path d="M170 120 L205 70 L230 110 L262 82 L285 130 L260 128 L248 112 L232 132 L214 104 L196 128 L182 122Z" fill="#fff"/>
+        <path d="M0 400 L40 350 L90 320 L150 300 L210 290 L280 305 L340 330 L400 360 V400Z" fill="#7ad37a"/>
+        <path d="M0 400 L30 380 L80 370 L150 365 L230 368 L310 375 L400 385 V400Z" fill="#2f9e44"/>
+        <path id="trail" d="M70 382 L130 352 L95 326 L160 300 L130 262 L190 236 L165 196 L212 170 L188 132 L205 72" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="2 7" stroke-linecap="round" opacity=".9"/>
+      </svg>
+      <div id="climber">🧗‍♀️</div>
+      <div id="flag">🚩</div>
+    </div>
+  </section>
+
+  <!-- 2. ЭКСПЕДИЦИЯ -->
+  <section class="screen scroll" id="s2">
+    <div class="head">
+      <span class="pill">Отчёт об экспедиции</span>
+      <h2>Оля, новый уровень —<br><em>47</em>!</h2>
+      <p>И каждый — на полной скорости</p>
+    </div>
+
+    <div class="card player vis-in">
+      <div class="lvlUp" id="lvlUp">LEVEL UP!</div>
+      <div class="pRow">
+        <div class="avatar" id="avatar"><svg viewBox="0 0 72 72"><circle cx="36" cy="28" r="13" fill="#f4f5f7"/><path d="M11 66 C 13 50 24 44 36 44 C 48 44 59 50 61 66 Z" fill="#f4f5f7"/></svg></div>
+        <div><div class="pName">Оля</div><div class="pRole">Класс: Путешественница<br>Стихия: горы, море и палатки<br>Суперсила: зажжёт танцпол за 5 минут</div></div>
+      </div>
+      <div class="likes"><div><b>⛷</b><span>Горнолыжка</span></div><div><b>⛺</b><span>Ночёвка в палатке</span></div><div><b>🏄‍♀️</b><span>Сап</span></div></div>
+      <div class="lvl"><span>УР. 46</span><span id="xpTxt">XP 0%</span><span>УР. 47</span></div>
+      <div class="bar"><i id="xpBar"></i></div>
+    </div>
+
+    <div class="secT">Статистика</div>
+    <div class="grid" id="stats"></div>
+
+    <div class="secT">Карта приключений</div>
+    <div class="card mapCard vis-in" id="mapCard">
+      <div class="mapTop"><div><b id="mapN">0</b><span>точек на карте</span></div><div><b id="mapKm">0</b><span>км от дома до самой дальней</span></div></div>
+      <svg id="map" viewBox="0 0 360 194"></svg>
+    </div>
+    <div id="trips"></div>
+
+    <div class="secT">Хвостатая команда</div>
+    <div class="pets" id="pets"></div>
+
+    <div class="secT">Главный человек</div>
+    <div class="card son vis-in">
+      <h3>Андрей 💚</h3>
+      <p>Когда-то — совсем кроха с бутылочкой молока, а теперь — 17 лет. Самое большое приключение в твоей жизни — и самое счастливое.</p>
+      <div class="steps17"><span>🍼</span><span>🧸</span><span>🎒</span><span>🚲</span><span class="boy"><svg viewBox="0 0 40 40" width="30" height="30"><circle cx="20" cy="22" r="11" fill="#f6d2b4"/><path d="M8.5 21 C8 11 14 7 20 7 C27 7 32.5 11 31.5 21 C29 16 25 14 20 14.5 C15 14 11 16 8.5 21Z" fill="#1b1b1f"/><circle cx="16" cy="23" r="1.4" fill="#2b2b2b"/><circle cx="24" cy="23" r="1.4" fill="#2b2b2b"/><path d="M16.5 27.5 Q20 30 23.5 27.5" stroke="#b5654a" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></span></div>
+    </div>
+
+    <div class="secT">Достижения</div>
+    <div id="achs"></div>
+
+    <div class="secT">Истории у костра</div>
+    <div id="stories"></div>
+
+    <div class="secT">Фото</div>
+    <div class="album" id="album"></div>
+
+    <div class="secT">Поздравления от близких</div>
+    <div class="greets" id="greets"></div>
+
+    <button class="danceBtn" id="dance">💃 Зажечь танцпол<small>проверим суперсилу за 5 секунд</small></button>
+
+    <div style="text-align:center"><button class="btn" id="toWish">Открыть рюкзак желаний 🎒</button></div>
+  </section>
+
+  <!-- 3. РЮКЗАК ЖЕЛАНИЙ -->
+  <section class="screen scroll" id="s3">
+    <span class="pill" style="margin:0 auto">Рюкзак желаний</span>
+    <h2 style="font:900 26px/1.12 Unbounded;margin-top:12px">Что взять с собой<br>в 48-й год?</h2>
+    <p style="color:var(--soft);margin-top:8px;font-size:14px">Тапни по рюкзаку</p>
+    <div class="packWrap"><div class="pack" id="pack">🎒</div></div>
+    <div class="cnt" id="cnt"></div>
+    <div id="wishes"></div>
+    <div class="card letter" id="letter">
+      <h3>С днём рождения,<br><em>Оля</em>! 💚</h3>
+      <p id="lText"></p>
+      <div class="sign">От всей семьи</div>
+      <button class="btn ghost" id="replay">↺ Сначала</button>
+    </div>
+  </section>
+
+  <canvas id="fx"></canvas>
+</div>
+
+<script>
+/* ============ ДАННЫЕ ============ */
+const CFG = {
+  birth: new Date(1979, 9, 5),   // 05.10.1979
+  avatar: 'img/avatar.jpg',
+  // альбом: [файл, подпись, 'wide' для горизонтальных]; null вместо файла — пустая рамка «скоро»
+  photos: [
+    ['img/shanghai-2.jpg', 'Шанхай. Город — твой 😎'],
+    ['img/ny.jpg', 'Новый год — все в сборе. И Бора тоже 🐾', 'wide'],
+    ['img/shanghai-1.jpg', 'Шанхай: позирует даже Нептун'],
+    ['img/shanghai-3.jpg', 'Шанхай. Купол — фон, звезда — ты'],
+    [null, 'Скоро тут будет ещё'],
+  ],
+  // Карта: [название, эмодзи, подпись, широта, долгота, тег, [сдвиг подписи dx, dy, выравнивание]]
+  trips: [
+    ['Владивосток', '🏡', 'Дом сейчас. Вокруг — Приморье: палатки, горы, сап и море', 43.12, 131.89, 'дом', [8, 4, 'start'], 1],
+    ['Арсеньев', '🌲', 'Родной город', 44.16, 133.27, 'родной', [8, 4, 'start'], 1],
+    ['Рязановка', '🌊', 'Море, на которое хочется возвращаться — и она возвращается снова и снова', 42.8, 131.24, 'море', [0, 15, 'middle'], 1],
+    ['Хабаровск', '⛰', 'Гора Ко — покорена. А заодно и Хабаровск', 48.48, 135.08, 'вершина', [8, 4, 'start'], 1],
+    ['Сахалин', '⛷', 'Горнолыжка — ездим часто, всей компанией', 46.96, 142.73, 'с нами', [0, -8, 'middle']],
+    ['Москва', '🏛', 'Столица — тоже в коллекции', 55.75, 37.62, 'город', [7, 4, 'start']],
+    ['Эльбрус', '🏔', '5 642 м — вместе с подружками', 43.35, 42.44, 'вершина', [7, 4, 'start']],
+    ['Сеул', '🇰🇷', 'Путешествие вместе с нами', 37.57, 126.98, 'с нами', [8, 4, 'start']],
+    ['Пекин', '🏯', 'Ещё одна точка в коллекции', 39.9, 116.4, 'город', [-8, 4, 'end']],
+    ['Шанхай', '🇨🇳', 'Недавно — с подругой', 31.23, 121.47, 'недавно', [8, 4, 'start']],
+    ['Яньшо', '⛰', 'Китайские горы-караваи и река Ли', 24.78, 110.49, 'путешествие', [-7, 3, 'end']],
+    ['Гонконг', '🌃', 'Небоскрёбы, огни и гавань', 22.32, 114.17, 'путешествие', [7, 6, 'start'], 0, 'Гонконг · Макао'],
+    ['Макао', '🎰', 'Азиатский Лас-Вегас — по соседству с Гонконгом', 22.2, 113.54, 'путешествие', null],
+    ['Хошимин', '🛵', 'Свадебное путешествие с Борей: Вьетнам на мопедах', 10.82, 106.63, 'медовый', null],
+    ['Фантьет', '🐟', 'Там же, во Вьетнаме: море и настоящий рыбный соус — видели, как его готовят', 10.93, 108.1, 'медовый', [7, 5, 'start'], 0, 'Хошимин · Фантьет'],
+    ['Бангкок', '🇹🇭', 'Таиланд: столица храмов и стрит-фуда', 13.76, 100.5, 'путешествие', [-7, 4, 'end']],
+    ['Пхукет', '🏝', 'Таиланд: море, пляжи и солнце', 7.88, 98.39, 'путешествие', [-7, 4, 'end']],
+  ],
+  // мечта — пунктиром, в счётчики не входит
+  dream: ['Эверест', '🏔', 'Базовый лагерь — 5 364 м. Мечта, которая уже ждёт', 28.0, 86.86, 'мечта', [-7, -5, 'end']],
+  // питомцы нарисованы вручную (ART ниже), чтобы цвета совпадали с настоящими
+  pets: [
+    ['cat', 'Мотя', 'серый кот, главный по дивану'],
+    ['pugBlack', 'Бора', 'энергия x2'],
+    ['pugFawn', 'Лола', 'навсегда в сердце 🤍'],
+  ],
+  achievements: [
+    ['🏔', 'Покорительница Эльбруса', '5 642 м. Рост невысокий — планка высоченная', 'Легенда'],
+    ['🐆', 'Приморский барс', 'Обошла все горы Приморского края. Все!', 'Легенда'],
+    ['⛰', 'Вершина Ко', 'Покорила гору Ко в Хабаровском крае', 'Эпик'],
+    ['⛺', 'Палатка против шторма', 'Шторм в палатке — и груднички рядом. Выстояли!', 'Эпик'],
+    ['👣', 'Горы с малышами', 'Поднялась на гору с маленькими детьми', 'Эпик'],
+    ['🎄', 'Новый год в заповеднике', 'Ёлка — настоящая, и вокруг — лес', 'Редкое'],
+    ['💃', 'Детонатор танцпола', 'Зажигает за 5 минут. Проверено', 'Мифик'],
+    ['🎿', 'Сахалинские склоны', 'Зимой — горнолыжка на Сахалине', 'Эпик'],
+    ['🏄‍♀️', 'Королева сапа', 'Летом — доска, весло и гладкая вода Приморья', 'Редкое'],
+    ['🔒', 'Базовый лагерь Эвереста', '5 364 м. Квест на следующий уровень — мечта уже в рюкзаке', 'Скоро', 'lock'],
+  ],
+  stories: [
+    ['🛵', 'Вьетнам на мопедах', 'Свадебное путешествие с Борей: дороги на мопедах и настоящий рыбный соус — своими глазами видели, как его готовят по-честному, с самого начала.'],
+    ['🌧', 'Шторм в палатке', 'Ветер, ливень, палатка ходуном — а рядом совсем маленькие дети. Ночь, которую никто не забудет, и все справились.'],
+    ['🥾', 'В горы с малышами', 'Пока другие сомневаются, ты просто берёшь детей и идёшь наверх. И все доходят.'],
+    ['🎄', 'Новый год в заповеднике', 'Вместо салатов и телевизора — лес, звёзды и тишина. Самый настоящий праздник.'],
+  ],
+  greets: [
+    ['Мама', 'Здесь будет поздравление'],
+    ['Андрей', 'Здесь будет поздравление'],
+    ['Подруги', 'Здесь будет поздравление'],
+  ],
+  wishes: [
+    ['✈️', 'Больше путешествий', 'новых стран, гор и палаточных ночей'],
+    ['💪', 'Крепкого здоровья', 'на все вершины, которые ещё впереди'],
+    ['☀️', 'Яркого солнца', 'и гладкой воды для сапа'],
+    ['🏡', 'Квартиру побольше', 'чтобы всем хвостам и людям хватило места'],
+  ],
+  letter: 'Пусть это поздравление и догнало тебя чуть позже 5 октября — желаем от всего сердца! Оля, ты — человек, рядом с которым невозможно сидеть на месте. Ты зовёшь в горы, ставишь палатку в любую погоду, первой выходишь на танцпол и заряжаешь всех вокруг. С тобой хочется смеяться, путешествовать и пробовать новое. Спасибо за твою неугомонность, позитив и любопытство ко всему на свете. Пусть этот год будет полон солнца, дорог и новых вершин — вплоть до базового лагеря Эвереста, а дома всегда ждут Андрей, Мотя и Бора. Мы тебя очень любим!',
+};
+
+/* ============ рисунки питомцев ============ */
+const pug = (fur, mask, line) => `<svg viewBox="0 0 64 64" width="60" height="60">
+  <path d="M13 17 C5 16 3 27 9 31 L18 23Z" fill="${mask}"/><path d="M51 17 C59 16 61 27 55 31 L46 23Z" fill="${mask}"/>
+  <ellipse cx="32" cy="35" rx="22" ry="20" fill="${fur}"/>
+  <path d="M23 21 Q32 16 41 21 M26 25 Q32 22 38 25" stroke="${line}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".55"/>
+  <ellipse cx="32" cy="43" rx="13.5" ry="10.5" fill="${mask}"/>
+  <circle cx="21.5" cy="31.5" r="6" fill="#f5f5f5"/><circle cx="42.5" cy="31.5" r="6" fill="#f5f5f5"/>
+  <circle cx="22" cy="32" r="4.4" fill="#1a1412"/><circle cx="42" cy="32" r="4.4" fill="#1a1412"/>
+  <circle cx="23.4" cy="30.4" r="1.5" fill="#fff"/><circle cx="43.4" cy="30.4" r="1.5" fill="#fff"/>
+  <ellipse cx="32" cy="38.5" rx="5.2" ry="3.4" fill="#0e0d0d"/><circle cx="30.3" cy="37.6" r="1" fill="#fff" opacity=".5"/>
+  <path d="M32 42 V44.5 M26.5 45.5 Q32 49 37.5 45.5" stroke="${line}" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+  <path d="M29.6 47 Q32 53 34.4 47Z" fill="#ff8fa3"/></svg>`;
+const ART = {
+  pugBlack: pug('#2b2b31', '#18181c', '#6a6a74'),
+  pugFawn: pug('#ecd1a3', '#3b2f29', '#1d1715'),
+  cat: `<svg viewBox="0 0 64 64" width="60" height="60">
+  <path d="M11 28 L13 6 L29 18Z" fill="#8c939d"/><path d="M53 28 L51 6 L35 18Z" fill="#8c939d"/>
+  <path d="M15 22 L16 11.5 L24.5 18.5Z" fill="#ffb8c6"/><path d="M49 22 L48 11.5 L39.5 18.5Z" fill="#ffb8c6"/>
+  <ellipse cx="32" cy="37" rx="22.5" ry="19" fill="#9ca3ad"/>
+  <path d="M28 20 L29 26.5 M32 19 V26.5 M36 20 L35 26.5" stroke="#7a818b" stroke-width="2.2" stroke-linecap="round"/>
+  <ellipse cx="32" cy="45" rx="9.5" ry="7" fill="#dde1e6"/>
+  <ellipse cx="22.5" cy="35" rx="4.6" ry="5.4" fill="#a6d65a"/><ellipse cx="41.5" cy="35" rx="4.6" ry="5.4" fill="#a6d65a"/>
+  <ellipse cx="22.5" cy="35" rx="1.7" ry="4.2" fill="#161616"/><ellipse cx="41.5" cy="35" rx="1.7" ry="4.2" fill="#161616"/>
+  <circle cx="23.8" cy="33" r="1.1" fill="#fff"/><circle cx="42.8" cy="33" r="1.1" fill="#fff"/>
+  <path d="M29.4 41 H34.6 L32 44Z" fill="#ff8fa3"/>
+  <path d="M32 44 V46 M32 46 Q29.5 48.5 27.3 47 M32 46 Q34.5 48.5 36.7 47" stroke="#5a6069" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M23.5 44.5 H11 M23.5 46.8 L12 50 M40.5 44.5 H53 M40.5 46.8 L52 50" stroke="#5a6069" stroke-width="1" stroke-linecap="round"/></svg>`,
+};
+
+/* ============ утилиты ============ */
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const fmt = n => Math.round(n).toLocaleString('ru-RU');
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+function haptic(p = 12) {
+  try { if (navigator.vibrate && navigator.vibrate(p)) return; } catch (e) {}
+  try { // iOS 18+: нативный switch даёт тактильный отклик (только внутри click)
+    const l = document.createElement('label'), i = document.createElement('input');
+    l.ariaHidden = 'true'; l.style.display = 'none'; i.type = 'checkbox'; i.setAttribute('switch', '');
+    l.appendChild(i); document.head.appendChild(l); l.click(); l.remove();
+  } catch (e) {}
+}
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id)); app.classList.toggle('scrolled', id !== 's1'); }
+const at = el => { const r = el.getBoundingClientRect(), a = app.getBoundingClientRect(); return [r.left - a.left + r.width / 2, r.top - a.top + r.height / 2]; };
+
+/* ============ звук: всё синтезируется в браузере (Web Audio), без файлов ============ */
+let AC, master, sfxBus, musicBus, soundOn = true;
+const PENTA = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98, 1760];   // до-мажорная пентатоника
+function audio() {
+  if (!AC) {
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+    master = AC.createGain(); master.gain.value = soundOn ? 1 : 0; master.connect(AC.destination);
+    sfxBus = AC.createGain(); sfxBus.gain.value = .85; sfxBus.connect(master);
+    musicBus = AC.createGain(); musicBus.gain.value = 0; musicBus.connect(master);
+    startAmbient();
+  }
+  if (!soundOn) return null;   // звук выключен кнопкой — эффекты не играем
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function duck() {   // на миг приглушаем фон, чтобы эффект был слышен
+  if (!musicBus) return; const t = AC.currentTime, g = musicBus.gain;
+  g.cancelScheduledValues(t); g.setTargetAtTime(.08, t, .02); g.setTargetAtTime(.32, t + .5, .4);
+}
+function tone(f, t, dur, type = 'sine', vol = .25, bus = sfxBus) {
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g); g.connect(bus); o.start(t); o.stop(t + dur + .05);
+}
+function noise(t, dur, vol = .15, hp = 6000) {
+  const b = AC.createBuffer(1, AC.sampleRate * dur, AC.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  const n = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  n.buffer = b; f.type = 'highpass'; f.frequency.value = hp;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  n.connect(f); f.connect(g); g.connect(sfxBus); n.start(t);
+}
+const sfx = {
+  step(k) { if (!audio()) return; duck(); const t = AC.currentTime, f = PENTA.at(Math.min(k, PENTA.length - 1)); noise(t, .03, .12, 3000); tone(f, t, .5, 'square', .09); tone(f, t, .6, 'triangle', .28); tone(f * 2, t, .3, 'sine', .1); },
+  fanfare() { if (!audio()) return; duck(); const t = AC.currentTime; [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, t + i * .12, .5, 'triangle', .22)); [523.25, 659.25, 783.99, 1046.5].forEach(f => tone(f, t + .55, 1.6, 'sine', .1)); },
+  pop() { if (!audio()) return; duck(); const t = AC.currentTime; tone(880, t, .12, 'sine', .18); tone(1318.5, t + .05, .15, 'sine', .1); },
+  chime() { if (!audio()) return; duck(); const t = AC.currentTime; tone(1318.5, t, .6, 'sine', .14); tone(1975.5, t + .09, .7, 'sine', .08); },
+  levelUp() { if (!audio()) return; duck(); const t = AC.currentTime; [783.99, 987.77, 1174.66, 1567.98].forEach((f, i) => tone(f, t + i * .08, .5, 'square', .05)); tone(1567.98, t + .35, .9, 'sine', .12); },
+  wish() { if (!audio()) return; duck(); const t = AC.currentTime; [1046.5, 1318.5, 1567.98, 2093].forEach((f, i) => tone(f, t + i * .07, .7, 'sine', .11)); noise(t, .35, .04, 8000); },
+  tick() { if (!audio()) return; tone(1760, AC.currentTime, .08, 'sine', .06); },
+  disco(sec = 5) {
+    if (!audio()) return; const t0 = AC.currentTime, beat = 60 / 124;
+    musicBus.gain.cancelScheduledValues(t0); musicBus.gain.setTargetAtTime(.03, t0, .05); musicBus.gain.setTargetAtTime(.32, t0 + sec, .6);
+    const BASS = [196, 196, 293.66, 261.63], CH = [[523.25, 659.25, 783.99], [587.33, 739.99, 880], [523.25, 659.25, 783.99], [493.88, 587.33, 783.99]];
+    for (let i = 0; i < sec / beat; i++) {
+      const t = t0 + i * beat, bar = Math.floor(i / 4) % 4;
+      const k = AC.createOscillator(), g = AC.createGain();               // бочка с «щелчком» — слышна и в маленьком динамике
+      k.type = 'triangle'; k.frequency.setValueAtTime(320, t); k.frequency.exponentialRampToValueAtTime(90, t + .12);
+      g.gain.setValueAtTime(.45, t); g.gain.exponentialRampToValueAtTime(.001, t + .18); k.connect(g); g.connect(sfxBus); k.start(t); k.stop(t + .2);
+      noise(t, .02, .25, 2500);
+      noise(t + beat / 2, .05, .16, 7000);                                 // хэт
+      if (i % 4 === 2) noise(t, .12, .22, 1500);                           // хлопок
+      tone(BASS.at(bar), t, beat * .85, 'square', .07);                    // бас в слышимом диапазоне
+      tone(BASS.at(bar) * 2, t + beat / 2, beat * .4, 'square', .04);
+      if (i % 2 === 1) CH.at(bar).forEach(f => tone(f, t, .22, 'square', .028));   // аккорды-стабы
+    }
+  },
+};
+/* фон: тихая «музыкальная шкатулка» — перебор по аккордам, без низкого гула */
+function startAmbient() {
+  // аккорды C – Am – F – G, только светлые ноты (523–1319 Гц)
+  const CHORDS = [[523.25, 659.25, 783.99, 1046.5], [440, 523.25, 659.25, 880], [349.23, 440, 523.25, 698.46], [392, 493.88, 587.33, 783.99]];
+  const PATTERN = [0, 2, 1, 3, 2, 1, null, 2];   // порядок нот в такте, null — пауза
+  const STEP = .42; let i = 0, next = AC.currentTime + .3;
+  function box(f, t) {   // нота «шкатулки»: мягкая атака и долгое затухание
+    const o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain();
+    o.type = 'sine'; o.frequency.value = f; o2.type = 'sine'; o2.frequency.value = f * 2.01;
+    const g2 = AC.createGain(); g2.gain.value = .25;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.04, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + 1.6);
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(musicBus);
+    o.start(t); o2.start(t); o.stop(t + 1.7); o2.stop(t + 1.7);
+  }
+  setInterval(() => {   // планируем ноты чуть вперёд, чтобы ритм не сбивался
+    while (next < AC.currentTime + .6) {
+      const chord = CHORDS.at(Math.floor(i / PATTERN.length) % CHORDS.length), n = PATTERN.at(i % PATTERN.length);
+      if (n !== null && Math.random() > .12) box(chord.at(n), next);
+      i++; next += STEP;
+    }
+  }, 120);
+  musicBus.gain.setTargetAtTime(.32, AC.currentTime, 2);
+}
+$('#snd').addEventListener('click', e => {
+  e.stopPropagation(); soundOn = !soundOn; $('#snd').textContent = soundOn ? '🔊' : '🔇';
+  if (!AC) { if (soundOn) audio(); return haptic(8); }
+  master.gain.cancelScheduledValues(AC.currentTime); master.gain.setValueAtTime(soundOn ? 1 : 0, AC.currentTime);
+  if (soundOn) AC.resume(); else AC.suspend();
+  haptic(8);
+});
+
+/* ============ эффекты ============ */
+const fx = $('#fx'), ctx = fx.getContext('2d'); let W, H, parts = [], running = false; const DPR = Math.min(devicePixelRatio || 1, 3);
+const COLORS = ['#14a3a0', '#2f9e44', '#1683c7', '#ffffff', '#ffc94d', '#7ad37a'];
+function resize() { W = app.clientWidth; H = app.clientHeight; fx.width = W * DPR; fx.height = H * DPR; ctx.setTransform(DPR, 0, 0, DPR, 0, 0); placeClimber(); }
+function burst(x, y, n, kind = 'c', pow = [4, 12], dir = -Math.PI / 2, spread = Math.PI * 2, cols = COLORS) {
+  for (let i = 0; i < n; i++) {
+    const a = dir + rnd(-spread / 2, spread / 2), v = rnd(...pow);
+    parts.push({ k: kind, x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, rot: rnd(0, 6), vr: rnd(-.3, .3), w: rnd(6, 11), h: rnd(4, 7), tilt: rnd(0, 6), vt: rnd(.08, .25), c: pick(cols), life: 1, trail: [], t: 0, ph: rnd(0, 6), f: rnd(.18, .32), amp: rnd(5, 10), lw: rnd(3, 5) });
+  }
+  if (!running) { running = true; requestAnimationFrame(loop); }
+}
+function salute(cols) {
+  burst(0, H, 8, 'r', [13, 20], -Math.PI / 3.2, .7, cols); burst(W, H, 8, 'r', [13, 20], -Math.PI + Math.PI / 3.2, .7, cols);
+  burst(0, H * .85, 60, 'c', [10, 19], -Math.PI / 3, .7, cols); burst(W, H * .85, 60, 'c', [10, 19], -Math.PI + Math.PI / 3, .7, cols);
+}
+function loop() {
+  ctx.clearRect(0, 0, W, H); parts = parts.filter(p => p.life > 0 && p.y < H + 120);
+  for (const p of parts) {
+    if (p.k === 's') { p.x += p.vx; p.y += p.vy; p.vx *= .92; p.vy = p.vy * .92 + .08; p.life -= .03; ctx.globalAlpha = p.life; ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, 7); ctx.fill(); }
+    else if (p.k === 'c') { p.vx *= .985; p.vy = Math.min(p.vy * .985 + .18, 3.2); p.x += p.vx + Math.sin(p.tilt) * .6; p.y += p.vy; p.rot += p.vr; p.tilt += p.vt; ctx.globalAlpha = 1; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, Math.cos(p.tilt)); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); }
+    else {
+      p.t++; p.vx *= .975; p.vy = Math.min(p.vy * .975 + .22, 2.6);
+      const sp = Math.hypot(p.vx, p.vy) || 1, nx = -p.vy / sp, ny = p.vx / sp, wob = Math.sin(p.t * p.f + p.ph) * p.amp;
+      p.x += p.vx; p.y += p.vy; p.trail.push([p.x + nx * wob, p.y + ny * wob]); if (p.trail.length > 46) p.trail.shift();
+      ctx.globalAlpha = 1; ctx.strokeStyle = p.c; ctx.lineWidth = p.lw; ctx.lineCap = ctx.lineJoin = 'round';
+      ctx.beginPath(); p.trail.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); if (p.t > 420) p.life = 0;
+    }
+  }
+  ctx.globalAlpha = 1;
+  if (parts.length) requestAnimationFrame(loop); else { running = false; ctx.clearRect(0, 0, W, H); }
+}
+
+/* ============ 1. восхождение ============ */
+const PTS = [[70, 382], [130, 352], [95, 326], [160, 300], [130, 262], [190, 236], [165, 196], [212, 170], [188, 132], [205, 72]];
+const STEPS = PTS.length - 1, TOP = 5642; let step = 0, done = false;
+function svgToApp([x, y]) {
+  const svg = $('#mtn'), m = svg.getScreenCTM(), p = svg.createSVGPoint(); p.x = x; p.y = y;
+  const q = p.matrixTransform(m), a = app.getBoundingClientRect(), mt = $('.mount').getBoundingClientRect();
+  return [q.x - mt.left, q.y - mt.top];
+}
+function placeClimber() {
+  if (!$('#mtn').getScreenCTM()) return;
+  const [x, y] = svgToApp(PTS[step]); $('#climber').style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -85%)`;
+  requestAnimationFrame(() => $('#climber').classList.add('ready'));   // анимация только после первой расстановки
+  const [fx2, fy2] = svgToApp([262, 82]); /* флаг — на восточной вершине, Оля — на западной */ $('#flag').style.left = fx2 + 'px'; $('#flag').style.top = fy2 + 'px';
+}
+function animAlt(from, to) { const t0 = performance.now(); const f = t => { const k = Math.min(1, (t - t0) / 500); $('#alt').textContent = fmt(from + (to - from) * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
+$('#s1').addEventListener('click', e => {
+  if (done) return;
+  const r = app.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+  const rp = document.createElement('div'); rp.className = 'ripple'; rp.style.left = x + 'px'; rp.style.top = y + 'px'; app.append(rp); setTimeout(() => rp.remove(), 650);
+  burst(x, y, 10, 's', [1.5, 5]); haptic(10); sfx.step(step); $('#hint').style.display = 'none';
+  const before = Math.round(TOP * step / STEPS); step++; placeClimber(); animAlt(before, Math.round(TOP * step / STEPS));
+  if (step >= STEPS) {
+    done = true; haptic([30, 60, 30, 60, 80]);
+    setTimeout(() => {
+      $('#flag').classList.add('in'); $('#climber').textContent = '💃'; salute(); sfx.fanfare(); haptic(60);
+      $('#s1top').style.opacity = 0; $('#greet').classList.add('show');
+      setTimeout(() => $('#toMain').classList.add('in'), 1200);
+    }, 500);
+  }
+});
+$('#toMain').addEventListener('click', e => { e.stopPropagation(); haptic(15); sfx.pop(); show('s2'); $('#s2').scrollTop = 0; playXP(); });
+function playXP() {
+  setTimeout(() => {
+    $('#xpBar').style.width = '100%'; const t0 = performance.now();
+    const tick = t => { const k = Math.min(1, (t - t0) / 2200); $('#xpTxt').textContent = 'XP ' + Math.round(100 * (1 - Math.pow(1 - k, 3))) + '%'; if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+    setTimeout(() => { $('#lvlUp').classList.add('in'); sfx.levelUp(); haptic([20, 30, 40]); burst(...at($('#lvlUp')), 35, 'c', [2, 7]); }, 2300);
+  }, 700);
+}
+
+/* ============ 2. содержимое ============ */
+const HOME = [43.12, 131.89];   // Владивосток
+function km([a, b], [c, d]) { const R = 6371, r = Math.PI / 180, dl = (c - a) * r, dn = (d - b) * r; const h = Math.sin(dl / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); }
+function build() {
+  const ms = Date.now() - CFG.birth, min = ms / 6e4;
+  const stats = [
+    ['📅', fmt(ms / 864e5), 'дней на планете — и ни одного скучного', 'wide'],
+    ['🏔', '5 642 м', 'покорённая высота. Рост — компактный'],
+    ['💇‍♀️', 'очень много', 'волос. Официально подтверждено'],
+    ['❤️', fmt(min * 75 / 1e6) + ' млн', '≈ ударов сердца — и все в ритме танца'],
+    ['💃', '5 минут', 'до зажжённого танцпола'],
+    ['🐾', '2 + 1', 'хвоста дома и один — в сердце'],
+    ['⛺', '∞', 'ночей в палатке (кто их считает?)'],
+  ];
+  $('#stats').innerHTML = stats.map(([i, v, l, w]) => `<div class="card tile vis-in ${w || ''}"><div class="ic">${i}</div><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  $('#trips').innerHTML = CFG.trips.map(([n, e, d, , , tag]) => `<div class="card row vis-in"><div class="e">${e}</div><div><b>${n}</b><span>${d}</span></div><div class="tag">${tag}</div></div>`).join('');
+  $('#pets').innerHTML = CFG.pets.map(([e, n, d]) => `<div class="card pet vis-in"><div class="e">${ART[e] || e}</div><b>${n}</b><span>${d}</span></div>`).join('');
+  $('#trips').innerHTML += (([n, e, d, , , tag]) => `<div class="card row vis-in"><div class="e">${e}</div><div><b>${n}</b><span>${d}</span></div><div class="tag">${tag}</div></div>`)(CFG.dream);
+  $('#achs').innerHTML = CFG.achievements.map(([i, t, d, r, cl]) => `<div class="card ach vis-in ${cl || ''}"><div class="ai">${i}</div><div><b>${t}</b><span>${d}</span></div><div class="rar">${r}</div></div>`).join('');
+  $('#stories').innerHTML = CFG.stories.map(([e, t, x]) => `<div class="card story vis-in"><div class="se">${e}</div><b>${t}</b><p>${x}</p></div>`).join('');
+  $('#album').innerHTML = CFG.photos.map(([src, cap, cl], i) => `<div class="pol ${cl || ''}" style="--r:${[-2, 1.5, -1, 2][i % 4]}deg">${src ? `<img class="ph" src="${src}" alt="" loading="lazy">` : '<div class="ph">📷<small>ещё фото</small></div>'}<b>${cap}</b></div>`).join('');
+  $('#greets').innerHTML = CFG.greets.map(([w, t]) => `<div class="card gc vis-in"><b>${w}</b><span>${t}</span></div>`).join('');
+  if (CFG.avatar) $('#avatar').innerHTML = `<img src="${CFG.avatar}" alt="">`;
+  buildMap();
+}
+const proj = (lat, lon) => [14 + (lon - 33) / 117 * 332, 10 + (60 - lat) / 46 * 150];
+const COL = { 'дом': '#2f9e44', 'родной': '#2f9e44', 'с нами': '#ffc94d', 'медовый': '#ff7aa8' };
+function dot(x, y, c, big, n, [dx, dy, an]) {
+  return `<circle cx="${x}" cy="${y}" r="${big ? 7 : 5}" fill="${c}" opacity=".3"/><circle cx="${x}" cy="${y}" r="${big ? 4 : 3}" fill="${c}"/>` +
+    (n ? `<text x="${x + dx}" y="${y + dy}" text-anchor="${an}">${n}</text>` : '');
+}
+const arc = (hx, hy, x, y, c, lift) => `<path class="arc" d="M${hx} ${hy} Q${(hx + x) / 2} ${Math.min(hy, y) - lift} ${x} ${y}" stroke="${c}"/>`;
+function buildMap() {
+  const [hx, hy] = proj(...HOME); let s = '', far = 0;
+  CFG.trips.forEach(([n, , , lat, lon, tag, off, near, label]) => {
+    const [x, y] = proj(lat, lon), c = COL[tag] || '#1683c7', home = tag === 'дом' || tag === 'родной';
+    if (!home) far = Math.max(far, km(HOME, [lat, lon]));
+    if (near) {
+      s += `<circle cx="${x}" cy="${y}" r="${tag === 'дом' ? 3.5 : 2.2}" fill="${c}"/>`;
+      if (tag === 'дом') s += `<text x="283" y="44" text-anchor="end">Приморье</text>`;
+    } else {
+      s += arc(hx, hy, x, y, c, 30) + dot(x, y, c, false, off && (label || n), off || [0, 0]);
+    }
+  });
+  const [n, , , lat, lon, , [dx, dy, an]] = CFG.dream, [x, y] = proj(lat, lon);
+  s += `<path class="dreamArc" d="M${hx} ${hy} Q${(hx + x) / 2} ${Math.min(hy, y) - 30} ${x} ${y}"/>` +
+    `<g class="dreamDot"><circle cx="${x}" cy="${y}" r="5" fill="#ff7aa8" opacity=".35"/><circle cx="${x}" cy="${y}" r="3" fill="#ff7aa8"/><text x="${x + dx}" y="${y + dy}" text-anchor="${an}">✨ мечта: ${n}</text></g>`;
+  $('#map').innerHTML = s;
+  $('#mapCard').querySelectorAll('.arc').forEach(a => { const L = a.getTotalLength(); a.style.strokeDasharray = L; a.style.strokeDashoffset = L; });
+  $('#mapCard')._far = far;
+}
+function countUp(el, to) { const t0 = performance.now(); const f = t => { const k = Math.min(1, (t - t0) / 1600); el.textContent = fmt(to * (1 - Math.pow(1 - k, 4))); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
+const io = new IntersectionObserver(es => es.forEach(en => {
+  if (!en.isIntersecting) return; const el = en.target; io.unobserve(el); el.classList.add('vis');
+  if (el.classList.contains('ach')) setTimeout(() => { sfx.chime(); haptic([12, 40, 12]); }, 250);
+  if (el.id === 'mapCard') { el.querySelectorAll('.arc').forEach((a, i) => setTimeout(() => { a.style.strokeDashoffset = 0; haptic(6); sfx.tick(); }, 200 + i * 300)); countUp($('#mapN'), CFG.trips.length); countUp($('#mapKm'), el._far); }
+}), { root: $('#s2'), threshold: .2 });
+
+/* танцпол */
+$('#dance').addEventListener('click', () => {
+  haptic([20, 40, 20, 40, 20, 40, 60, 40, 20, 40, 20, 40, 60]); sfx.disco(5); $('#disco').classList.add('on');
+  const DISCO = ['#ff6bd6', '#5ee7ff', '#ffe066', '#7dff8a', '#7b5cff'];
+  let n = 0; const iv = setInterval(() => { burst(rnd(.1, .9) * W, rnd(.2, .6) * H, 30, 'c', [3, 10], -Math.PI / 2, Math.PI * 2, DISCO); if (++n > 8) clearInterval(iv); }, 550);
+  setTimeout(() => { $('#disco').classList.remove('on'); $('#dance').innerHTML = '✅ Танцпол зажжён!<small>суперсила подтверждена</small>'; }, 5000);
+});
+$('#toWish').addEventListener('click', () => { haptic(15); sfx.pop(); show('s3'); $('#s3').scrollTop = 0; });
+
+/* ============ 3. рюкзак желаний ============ */
+let wi = 0, busy = false;
+$('#cnt').textContent = `0 / ${CFG.wishes.length}`;
+$('#pack').addEventListener('click', () => {
+  if (busy || wi >= CFG.wishes.length) return; busy = true; haptic([15, 30, 15]); sfx.wish();
+  const p = $('#pack'); p.classList.remove('shake'); void p.offsetWidth; p.classList.add('shake');
+  setTimeout(() => {
+    const [e, t, d] = CFG.wishes[wi++];
+    $('#wishes').insertAdjacentHTML('beforeend', `<div class="card wish"><div class="e">${e}</div><div><b>${t}</b><span>${d}</span></div></div>`);
+    $('#cnt').textContent = `${wi} / ${CFG.wishes.length}`; burst(...at(p), 18, 's', [2, 6]); busy = false;
+    if (wi >= CFG.wishes.length) setTimeout(() => {
+      $('#letter').classList.add('show'); salute(); sfx.fanfare(); haptic([30, 50, 30, 50, 90]);
+      setTimeout(() => $('#letter').scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    }, 700);
+  }, 450);
+});
+$('#replay').addEventListener('click', () => location.reload());
+
+/* ============ старт ============ */
+$('#lText').textContent = CFG.letter;
+build();
+document.querySelectorAll('#s2 .vis-in').forEach(el => io.observe(el));
+addEventListener('resize', resize); resize();
+requestAnimationFrame(() => { placeClimber(); });
+</script>
+</body>
+</html>
