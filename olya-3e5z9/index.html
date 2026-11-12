@@ -127,13 +127,14 @@
   .row b{display:block;font-size:15px;font-weight:800}
   .row span{display:block;font-size:12.5px;color:var(--soft);margin-top:2px;line-height:1.35}
   .row .tag{margin-left:auto;flex:none;font:800 9.5px Unbounded;letter-spacing:.06em;text-transform:uppercase;padding:6px 8px;border-radius:7px;color:var(--teal);border:1px solid rgba(20,163,160,.4)}
-  .pets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .pets{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
   .pet{padding:14px 8px;text-align:center}
   .pet .e{font-size:38px;line-height:0;display:flex;justify-content:center}
   .pet b{display:block;font:900 15px Unbounded;margin-top:6px}
   .pet span{display:block;font-size:11.5px;color:var(--soft);margin-top:4px;line-height:1.3}
   .son{padding:18px;background:linear-gradient(135deg,rgba(20,163,160,.16),rgba(255,255,255,.75))}
   .son h3{font:900 20px/1.15 Unbounded}
+  .sonPic{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:50% 45%;border-radius:14px;margin-top:12px}
   .son p{font-size:14px;line-height:1.5;color:var(--soft);margin-top:8px}
   .steps17{display:flex;justify-content:space-between;margin-top:14px;font-size:22px;position:relative}
   .steps17::before{content:"";position:absolute;left:12px;right:12px;top:50%;height:2px;background:repeating-linear-gradient(90deg,var(--teal) 0 6px,transparent 6px 12px)}
@@ -263,6 +264,7 @@
     <div class="card son vis-in">
       <h3>Андрей 💚</h3>
       <p>Когда-то — совсем кроха с бутылочкой молока, а теперь — 17 лет. Самое большое приключение в твоей жизни — и самое счастливое.</p>
+      <img class="sonPic" src="img/andrey-2.jpg" alt="" loading="lazy">
       <div class="steps17"><span>🍼</span><span>🧸</span><span>🎒</span><span>🚲</span><span class="boy"><svg viewBox="0 0 40 40" width="30" height="30"><circle cx="20" cy="22" r="11" fill="#f6d2b4"/><path d="M8.5 21 C8 11 14 7 20 7 C27 7 32.5 11 31.5 21 C29 16 25 14 20 14.5 C15 14 11 16 8.5 21Z" fill="#1b1b1f"/><circle cx="16" cy="23" r="1.4" fill="#2b2b2b"/><circle cx="24" cy="23" r="1.4" fill="#2b2b2b"/><path d="M16.5 27.5 Q20 30 23.5 27.5" stroke="#b5654a" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></span></div>
     </div>
 
@@ -309,11 +311,21 @@ const CFG = {
   avatar: 'img/avatar.jpg',
   // альбом: [файл, подпись, 'wide' для горизонтальных]; null вместо файла — пустая рамка «скоро»
   photos: [
+    ['img/boris-1.jpg', 'С Борей', 'wide'],
+    ['img/boris-2.jpg', 'Вдвоём у водопада', 'wide'],
+    ['img/sea-2005.jpg', 'Лето 2005: море и полная свобода'],
+    ['img/andrey-2.jpg', 'Андрей — совсем кроха'],
+    ['img/andrey-1.jpg', 'С Андреем в кенгуру — и в осенний лес'],
+    ['img/sea-kids.jpg', 'Море, галька и дети на плечах', 'wide'],
+    ['img/ryazanovka.jpg', 'Рязановка — то самое любимое море', 'wide'],
     ['img/shanghai-2.jpg', 'Шанхай. Город — твой 😎'],
     ['img/ny.jpg', 'Новый год — все в сборе. И Бора тоже 🐾', 'wide'],
     ['img/shanghai-1.jpg', 'Шанхай: позирует даже Нептун'],
     ['img/shanghai-3.jpg', 'Шанхай. Купол — фон, звезда — ты'],
-    [null, 'Скоро тут будет ещё'],
+    ['img/moscow-1.jpg', 'Москва, январь: Кремль в снегу', 'wide'],
+    ['img/moscow-2.jpg', 'Москва: арка огней'],
+    ['img/hike.jpg', 'Последний поход: камни, снег и ветер'],
+    ['img/hike-planet.jpg', 'Герои чемпиона! Трое против метели'],
   ],
   // Карта: [название, эмодзи, подпись, широта, долгота, тег, [сдвиг подписи dx, dy, выравнивание]]
   trips: [
@@ -322,7 +334,7 @@ const CFG = {
     ['Рязановка', '🌊', 'Море, на которое хочется возвращаться — и она возвращается снова и снова', 42.8, 131.24, 'море', [0, 15, 'middle'], 1],
     ['Хабаровск', '⛰', 'Гора Ко — покорена. А заодно и Хабаровск', 48.48, 135.08, 'вершина', [8, 4, 'start'], 1],
     ['Сахалин', '⛷', 'Горнолыжка — ездим часто, всей компанией', 46.96, 142.73, 'с нами', [0, -8, 'middle']],
-    ['Москва', '🏛', 'Столица — тоже в коллекции', 55.75, 37.62, 'город', [7, 4, 'start']],
+    ['Москва', '🏛', 'Столица — зимняя, в снегу и огнях', 55.75, 37.62, 'город', [7, 4, 'start']],
     ['Эльбрус', '🏔', '5 642 м — вместе с подружками', 43.35, 42.44, 'вершина', [7, 4, 'start']],
     ['Сеул', '🇰🇷', 'Путешествие вместе с нами', 37.57, 126.98, 'с нами', [8, 4, 'start']],
     ['Пекин', '🏯', 'Ещё одна точка в коллекции', 39.9, 116.4, 'город', [-8, 4, 'end']],
@@ -342,6 +354,7 @@ const CFG = {
     ['cat', 'Мотя', 'серый кот, главный по дивану'],
     ['pugBlack', 'Бора', 'энергия x2'],
     ['pugFawn', 'Лола', 'навсегда в сердце 🤍'],
+    ['hamster', 'Хомяк', 'однажды у него случился сердечный приступ — и Оля сидела с ним в очереди к ветеринару 💚'],
   ],
   achievements: [
     ['🏔', 'Покорительница Эльбруса', '5 642 м. Рост невысокий — планка высоченная', 'Легенда'],
@@ -352,10 +365,12 @@ const CFG = {
     ['🎄', 'Новый год в заповеднике', 'Ёлка — настоящая, и вокруг — лес', 'Редкое'],
     ['💃', 'Детонатор танцпола', 'Зажигает за 5 минут. Проверено', 'Мифик'],
     ['🎿', 'Сахалинские склоны', 'Зимой — горнолыжка на Сахалине', 'Эпик'],
+    ['❄️', 'Герои чемпиона!', 'Последний поход — в снег и метель, втроём с коллегами', 'Эпик'],
     ['🏄‍♀️', 'Королева сапа', 'Летом — доска, весло и гладкая вода Приморья', 'Редкое'],
     ['🔒', 'Базовый лагерь Эвереста', '5 364 м. Квест на следующий уровень — мечта уже в рюкзаке', 'Скоро', 'lock'],
   ],
   stories: [
+    ['🕷', 'Дело о человеке-пауке', 'Оля мечтала о новой двери. И тут к ней по балконам забрался пьяный «человек-паук» — хорошо, что ни Оли, ни Андрея дома не было. В полиции дело так и назвали — «о человеке-пауке». А мечта сбылась: Оле подарили новую дверь.'],
     ['🛵', 'Вьетнам на мопедах', 'Свадебное путешествие с Борей: дороги на мопедах и настоящий рыбный соус — своими глазами видели, как его готовят по-честному, с самого начала.'],
     ['🌧', 'Шторм в палатке', 'Ветер, ливень, палатка ходуном — а рядом совсем маленькие дети. Ночь, которую никто не забудет, и все справились.'],
     ['🥾', 'В горы с малышами', 'Пока другие сомневаются, ты просто берёшь детей и идёшь наверх. И все доходят.'],
@@ -388,6 +403,18 @@ const pug = (fur, mask, line) => `<svg viewBox="0 0 64 64" width="60" height="60
   <path d="M32 42 V44.5 M26.5 45.5 Q32 49 37.5 45.5" stroke="${line}" stroke-width="1.7" fill="none" stroke-linecap="round"/>
   <path d="M29.6 47 Q32 53 34.4 47Z" fill="#ff8fa3"/></svg>`;
 const ART = {
+  hamster: `<svg viewBox="0 0 64 64" width="60" height="60">
+  <circle cx="17" cy="19" r="7.5" fill="#d08a50"/><circle cx="47" cy="19" r="7.5" fill="#d08a50"/>
+  <circle cx="17" cy="19" r="4" fill="#ffb8c6"/><circle cx="47" cy="19" r="4" fill="#ffb8c6"/>
+  <ellipse cx="32" cy="37" rx="23" ry="20" fill="#e2a26a"/>
+  <ellipse cx="32" cy="45" rx="14" ry="10" fill="#fbecd9"/>
+  <ellipse cx="16" cy="41" rx="8" ry="7" fill="#fbecd9"/><ellipse cx="48" cy="41" rx="8" ry="7" fill="#fbecd9"/>
+  <circle cx="24" cy="32" r="3.4" fill="#161616"/><circle cx="40" cy="32" r="3.4" fill="#161616"/>
+  <circle cx="25.1" cy="30.9" r="1.1" fill="#fff"/><circle cx="41.1" cy="30.9" r="1.1" fill="#fff"/>
+  <path d="M30 38 H34 L32 40.4Z" fill="#ff8fa3"/>
+  <path d="M32 40.4 V42 M32 42 Q30 44 28.4 43 M32 42 Q34 44 35.6 43" stroke="#7a4a2a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <path d="M24 40 H13 M24 42 L14 45 M40 40 H51 M40 42 L50 45" stroke="#7a4a2a" stroke-width=".9" stroke-linecap="round"/>
+  <path d="M44 9 C44 6 48 6 48 9 C48 6 52 6 52 9 C52 12 48 14 48 15 C48 14 44 12 44 9Z" fill="#e8455f"/></svg>`,
   pugBlack: pug('#2b2b31', '#18181c', '#6a6a74'),
   pugFawn: pug('#ecd1a3', '#3b2f29', '#1d1715'),
   cat: `<svg viewBox="0 0 64 64" width="60" height="60">
@@ -596,6 +623,7 @@ function build() {
     ['💃', '5 минут', 'до зажжённого танцпола'],
     ['🐾', '2 + 1', 'хвоста дома и один — в сердце'],
     ['⛺', '∞', 'ночей в палатке (кто их считает?)'],
+    ['🕷', '1', 'человек-паук в деле полиции — и новая дверь в подарок', 'wide'],
   ];
   $('#stats').innerHTML = stats.map(([i, v, l, w]) => `<div class="card tile vis-in ${w || ''}"><div class="ic">${i}</div><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
   $('#trips').innerHTML = CFG.trips.map(([n, e, d, , , tag]) => `<div class="card row vis-in"><div class="e">${e}</div><div><b>${n}</b><span>${d}</span></div><div class="tag">${tag}</div></div>`).join('');
