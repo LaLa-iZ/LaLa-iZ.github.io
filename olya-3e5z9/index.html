@@ -593,7 +593,7 @@ $('#toMain').addEventListener('click', e => { e.stopPropagation(); haptic(15); s
 function playXP() {
   setTimeout(() => {
     $('#xpBar').style.width = '100%'; const t0 = performance.now();
-    const tick = t => { const k = Math.min(1, (t - t0) / 2200); $('#xpTxt').textContent = 'XP ' + Math.round(100 * (1 - Math.pow(1 - k, 3))) + '%'; if (k < 1) requestAnimationFrame(tick); };
+    const tick = t => { const k = Math.min(1, (t - t0) / 2200); $('#xpTxt').textContent = k < 1 ? 'XP ' + Math.round(100 * (1 - Math.pow(1 - k, 3))) + '%' : 'XP 100% · MAX'; if (k < 1) requestAnimationFrame(tick); };
     requestAnimationFrame(tick);
     setTimeout(() => { $('#lvlUp').classList.add('in'); sfx.levelUp(); haptic([20, 30, 40]); burst(...at($('#lvlUp')), 35, 'c', [2, 7]); }, 2300);
   }, 700);
