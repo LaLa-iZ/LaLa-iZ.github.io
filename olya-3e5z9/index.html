@@ -151,7 +151,7 @@
   .story .se{font-size:30px}
   .story b{display:block;font:800 17px/1.25 Unbounded;margin-top:6px}
   .story p{font-size:14px;line-height:1.5;color:var(--soft);margin-top:6px}
-  .album{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:6px 16px 12px;scrollbar-width:none}
+  .album{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:6px 16px 12px;scrollbar-width:none;align-items:flex-start}
   .album::-webkit-scrollbar{display:none}
   .pol{flex:none;width:62%;scroll-snap-align:center;background:#fffdf7;border-radius:6px;padding:8px 8px 0;box-shadow:0 10px 24px rgba(13,53,80,.2);transform:rotate(var(--r))}
   .pol .ph{aspect-ratio:4/5;border-radius:3px;display:grid;place-items:center;text-align:center;font-size:40px;background:linear-gradient(160deg,#9fdcff,#7ad37a)}
@@ -160,10 +160,6 @@
   .pol img.ph{display:block;width:100%;object-fit:cover;background:#dfe9ef}
   .pol .ph small{display:block;font:700 12px Manrope;color:var(--ink);margin-top:4px}
   .pol b{display:block;font:800 13px Manrope;padding:9px 2px 11px}
-  .greets{display:grid;gap:10px}
-  .gc{padding:14px 16px;border:1.5px dashed rgba(20,163,160,.5)}
-  .gc b{display:block;font-weight:800}
-  .gc span{display:block;font-size:13px;color:var(--soft);margin-top:4px;font-style:italic}
   .danceBtn{display:block;width:100%;margin-top:14px;border:0;cursor:pointer;padding:20px;border-radius:22px;font:900 18px Unbounded;color:#fff;
     background:linear-gradient(135deg,#ff6bd6,#7b5cff,#5ee7ff);background-size:200% 200%;animation:grad 3s ease infinite;box-shadow:0 12px 28px rgba(123,92,255,.35)}
   .danceBtn small{display:block;font:700 12px Manrope;margin-top:6px;opacity:.9}
@@ -277,9 +273,6 @@
     <div class="secT">Фото</div>
     <div class="album" id="album"></div>
 
-    <div class="secT">Поздравления от близких</div>
-    <div class="greets" id="greets"></div>
-
     <button class="danceBtn" id="dance">💃 Зажечь танцпол<small>проверим суперсилу за 5 секунд</small></button>
 
     <div style="text-align:center"><button class="btn" id="toWish">Открыть рюкзак желаний 🎒</button></div>
@@ -317,15 +310,15 @@ const CFG = {
     ['img/andrey-2.jpg', 'Андрей — совсем кроха'],
     ['img/andrey-1.jpg', 'С Андреем в кенгуру — и в осенний лес'],
     ['img/sea-kids.jpg', 'Море, галька и дети на плечах', 'wide'],
-    ['img/ryazanovka.jpg', 'Рязановка — то самое любимое море', 'wide'],
+    ['img/ryazanovka.jpg', 'Бухта Бойсмана', 'wide'],
     ['img/shanghai-2.jpg', 'Шанхай. Город — твой 😎'],
     ['img/ny.jpg', 'Новый год — все в сборе. И Бора тоже 🐾', 'wide'],
     ['img/shanghai-1.jpg', 'Шанхай: позирует даже Нептун'],
     ['img/shanghai-3.jpg', 'Шанхай. Купол — фон, звезда — ты'],
     ['img/moscow-1.jpg', 'Москва, январь: Кремль в снегу', 'wide'],
     ['img/moscow-2.jpg', 'Москва: арка огней'],
-    ['img/hike.jpg', 'Последний поход: камни, снег и ветер'],
-    ['img/hike-planet.jpg', 'Герои чемпиона! Трое против метели'],
+    ['img/hike.jpg', 'Зимний поход: камни, снег и ветер'],
+    ['img/hike-planet.jpg', 'Друзья по всей планете!'],
   ],
   // Карта: [название, эмодзи, подпись, широта, долгота, тег, [сдвиг подписи dx, dy, выравнивание]]
   trips: [
@@ -365,7 +358,7 @@ const CFG = {
     ['🎄', 'Новый год в заповеднике', 'Ёлка — настоящая, и вокруг — лес', 'Редкое'],
     ['💃', 'Детонатор танцпола', 'Зажигаешь за 5 минут. Проверено', 'Мифик'],
     ['🎿', 'Сахалинские склоны', 'Зимой — горнолыжка на Сахалине', 'Эпик'],
-    ['❄️', 'Герои чемпиона!', 'Последний поход — в снег и метель, втроём с коллегами', 'Эпик'],
+    ['❄️', 'Герои чемпиона!', 'Зимний поход — в снег и метель, втроём с коллегами', 'Эпик'],
     ['🏄‍♀️', 'Королева сапа', 'Летом — доска, весло и гладкая вода Приморья', 'Редкое'],
     ['🔒', 'Базовый лагерь Эвереста', '5 364 м. Квест на следующий уровень — мечта уже в рюкзаке', 'Скоро', 'lock'],
   ],
@@ -375,11 +368,6 @@ const CFG = {
     ['🌧', 'Шторм в палатке', 'Ветер, ливень, палатка ходуном — а рядом совсем маленькие дети. Ночь, которую никто не забудет, и все справились.'],
     ['🥾', 'В горы с малышами', 'Пока другие сомневаются, ты просто берёшь детей и идёшь наверх. И все доходят.'],
     ['🎄', 'Новый год в заповеднике', 'Вместо салатов и телевизора — лес, звёзды и тишина. Самый настоящий праздник.'],
-  ],
-  greets: [
-    ['Мама', 'Здесь будет поздравление'],
-    ['Андрей', 'Здесь будет поздравление'],
-    ['Подруги', 'Здесь будет поздравление'],
   ],
   wishes: [
     ['✈️', 'Больше путешествий', 'новых стран, гор и палаточных ночей'],
@@ -632,7 +620,6 @@ function build() {
   $('#achs').innerHTML = CFG.achievements.map(([i, t, d, r, cl]) => `<div class="card ach vis-in ${cl || ''}"><div class="ai">${i}</div><div><b>${t}</b><span>${d}</span></div><div class="rar">${r}</div></div>`).join('');
   $('#stories').innerHTML = CFG.stories.map(([e, t, x]) => `<div class="card story vis-in"><div class="se">${e}</div><b>${t}</b><p>${x}</p></div>`).join('');
   $('#album').innerHTML = CFG.photos.map(([src, cap, cl], i) => `<div class="pol ${cl || ''}" style="--r:${[-2, 1.5, -1, 2][i % 4]}deg">${src ? `<img class="ph" src="${src}" alt="" loading="lazy">` : '<div class="ph">📷<small>ещё фото</small></div>'}<b>${cap}</b></div>`).join('');
-  $('#greets').innerHTML = CFG.greets.map(([w, t]) => `<div class="card gc vis-in"><b>${w}</b><span>${t}</span></div>`).join('');
   if (CFG.avatar) $('#avatar').innerHTML = `<img src="${CFG.avatar}" alt="">`;
   buildMap();
 }
